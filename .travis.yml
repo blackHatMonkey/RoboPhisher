@@ -19,10 +19,6 @@ script:
   - pylint --errors-only wifiphisher
   - tox -e ALL
 
-branches:
-  only:
-  - master
-
 notifications:
   email:
     on_success: never
