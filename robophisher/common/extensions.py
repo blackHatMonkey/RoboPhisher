@@ -12,7 +12,6 @@ import scapy.layers.dot11 as dot11
 import scapy.arch.linux as linux
 import robophisher.common.constants as constants
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -140,8 +139,7 @@ class ExtensionManager(object):
         """
 
         # set the current channel to the ap channel
-        self._nm.set_interface_channel(
-            self._interface, int(self._current_channel))
+        self._nm.set_interface_channel(self._interface, int(self._current_channel))
 
         # if the stop flag not set, change the channel
         while self._should_continue:
@@ -152,10 +150,9 @@ class ExtensionManager(object):
                     if self._should_continue:
                         try:
                             self._socket.close()
-                            self._nm.set_interface_channel(
-                                self._interface, int(self._current_channel))
-                            self._socket = linux.L2Socket(
-                                iface=self._interface)
+                            self._nm.set_interface_channel(self._interface,
+                                                           int(self._current_channel))
+                            self._socket = linux.L2Socket(iface=self._interface)
                             # extends the channel hopping time to sniff
                             # more frames
                             time.sleep(3)
@@ -207,14 +204,12 @@ class ExtensionManager(object):
         """
 
         # Convert shared_data from dict to named tuple
-        shared_data = collections.namedtuple('GenericDict',
-                                             shared_data.keys())(**shared_data)
+        shared_data = collections.namedtuple('GenericDict', shared_data.keys())(**shared_data)
         self._shared_data = shared_data
 
         # Initialize all extensions with the shared data
         for extension in self._extensions_str:
-            mod = importlib.import_module(
-                constants.EXTENSIONS_LOADPATH + extension)
+            mod = importlib.import_module(constants.EXTENSIONS_LOADPATH + extension)
             extension_class = getattr(mod, extension.title())
             obj = extension_class(shared_data)
             self._extensions.append(obj)
@@ -260,9 +255,8 @@ class ExtensionManager(object):
             self._listen_thread.join(3)
         if self._send_thread.is_alive():
             self._send_thread.join(3)
-        if (self._shared_data is not None and
-                self._shared_data.is_freq_hop_allowed and
-                self._channelhop_thread.is_alive()):
+        if (self._shared_data is not None and self._shared_data.is_freq_hop_allowed
+                and self._channelhop_thread.is_alive()):
             self._channelhop_thread.join(3)
         # Close socket if it's open
         try:
@@ -287,8 +281,8 @@ class ExtensionManager(object):
             number_of_channels = len(channels_interested)
             if channels_interested and number_of_channels > 0:
                 # Append only new channels (no duplicates)
-                self._channels_to_hop += list(set(channels_interested) -
-                                              set(self._channels_to_hop))
+                self._channels_to_hop += list(
+                    set(channels_interested) - set(self._channels_to_hop))
 
     def get_output(self):
         """

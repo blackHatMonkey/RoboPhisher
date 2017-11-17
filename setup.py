@@ -11,24 +11,24 @@ from ctypes.util import find_library
 from setuptools import setup, find_packages, Command
 import robophisher.common.constants as constants
 
-
 with open('robophisher/__init__.py', 'r') as fd:
-    version = re.search(
-        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
-        fd.read(),
-        re.MULTILINE
-    ).group(1)
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(),
+                        re.MULTILINE).group(1)
 
 
 class CleanCommand(Command):
     """Custom clean command to tidy up the project root."""
     user_options = []
+
     def initialize_options(self):
         pass
+
     def finalize_options(self):
         pass
+
     def run(self):
         os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
+
 
 def get_dnsmasq():
     """
@@ -54,16 +54,16 @@ def get_dnsmasq():
                       "not found in /usr/sbin/dnsmasq"))
 
     if not os.path.isfile("/usr/sbin/dnsmasq"):
-        dnsmasq_message = ("\n[" + constants.R + "-" + constants.W +
-                           "] Unable to install the \'dnsmasq\' package!\n" + "[" + constants.T +
-                           "*" + constants.W + "] This process requires a persistent internet " +
-                           "connection!\nPlease follow the link below to configure your " +
-                           "sources.list\n" + constants.B + "http://docs.kali.org/general-use/" +
-                           "kali-linux-sources-list-repositories\n" + constants.W + "[" +
-                           constants.G + "+" + constants.W + "] Run apt-get update for changes " +
-                           "to take effect.\n" + "[" + constants.G + "+" + constants.W + "] " +
-                           "Rerun the script to install dnsmasq.\n[" + constants.R + "!" +
-                           constants.W + "] Closing")
+        dnsmasq_message = (
+            "\n[" + constants.R + "-" + constants.W +
+            "] Unable to install the \'dnsmasq\' package!\n" + "[" + constants.T + "*" +
+            constants.W + "] This process requires a persistent internet " +
+            "connection!\nPlease follow the link below to configure your " + "sources.list\n" +
+            constants.B + "http://docs.kali.org/general-use/" +
+            "kali-linux-sources-list-repositories\n" + constants.W + "[" + constants.G + "+" +
+            constants.W + "] Run apt-get update for changes " + "to take effect.\n" + "[" +
+            constants.G + "+" + constants.W + "] " + "Rerun the script to install dnsmasq.\n[" +
+            constants.R + "!" + constants.W + "] Closing")
 
         sys.exit(dnsmasq_message)
 
@@ -142,6 +142,7 @@ def get_libdbus():
             sys.exit(("[" + constants.R + "-" + constants.W + "] libdbus-glib-1 not found. "
                       "Please install libdbus-glib-1 (i.e. using your package manager)"))
 
+
 # check the dbus related libraries first
 get_libdbus()
 
@@ -156,24 +157,37 @@ KEYWORDS = ["robophisher", "evil", "twin", "phishing"]
 PACKAGES = find_packages(exclude=["docs", "tests"])
 INCLUDE_PACKAGE_DATA = True
 VERSION = version
-CLASSIFIERS = ["Development Status :: 5 - Production/Stable",
-               "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
-               "Natural Language :: English", "Operating System :: Unix",
-               "Programming Language :: Python :: 2", "Programming Language :: Python :: 2.7",
-               "Programming Language :: Python :: 2 :: Only", "Topic :: Security",
-               "Topic :: System :: Networking", "Intended Audience :: End Users/Desktop",
-               "Intended Audience :: System Administrators",
-               "Intended Audience :: Information Technology"]
+CLASSIFIERS = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Natural Language :: English", "Operating System :: Unix",
+    "Programming Language :: Python :: 2", "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 2 :: Only", "Topic :: Security",
+    "Topic :: System :: Networking", "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: System Administrators", "Intended Audience :: Information Technology"
+]
 ENTRY_POINTS = {"console_scripts": ["robophisher= robophisher.pyrobophisher:run"]}
-INSTALL_REQUIRES = ["PyRIC", "tornado", "blessings>=1.6", "dbus-python",
-                    "pbkdf2", "roguehostapd"]
-CMDCLASS = {"clean": CleanCommand,}
+INSTALL_REQUIRES = ["PyRIC", "tornado", "blessings>=1.6", "dbus-python", "pbkdf2", "roguehostapd"]
+CMDCLASS = {
+    "clean": CleanCommand,
+}
 
 # run setup
-setup(name=NAME, author=AUTHOR, author_email=AUTHOR_EMAIL, description=DESCRIPTION,
-      license=LICENSE, keywords=KEYWORDS, packages=PACKAGES,
-      include_package_data=INCLUDE_PACKAGE_DATA, version=VERSION, entry_points=ENTRY_POINTS,
-      install_requires=INSTALL_REQUIRES, classifiers=CLASSIFIERS, url=URL, cmdclass=CMDCLASS)
+setup(
+    name=NAME,
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
+    description=DESCRIPTION,
+    license=LICENSE,
+    keywords=KEYWORDS,
+    packages=PACKAGES,
+    include_package_data=INCLUDE_PACKAGE_DATA,
+    version=VERSION,
+    entry_points=ENTRY_POINTS,
+    install_requires=INSTALL_REQUIRES,
+    classifiers=CLASSIFIERS,
+    url=URL,
+    cmdclass=CMDCLASS)
 
 # Get hostapd or dnsmasq if needed
 get_hostapd()

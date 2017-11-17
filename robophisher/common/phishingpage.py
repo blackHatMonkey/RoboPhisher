@@ -34,8 +34,8 @@ class InvalidTemplate(Exception):
     """ Exception class to raise in case of a invalid template """
 
     def __init__(self):
-        Exception.__init__(self, "The given template is either invalid or " +
-                           "not available locally!")
+        Exception.__init__(self,
+                           "The given template is either invalid or " + "not available locally!")
 
 
 class PhishingTemplate(object):
@@ -98,18 +98,15 @@ class PhishingTemplate(object):
         options = original_config.options('info')
         for option in options:
             if option != "payloadpath":
-                config.set('info', option,
-                           original_config.get('info', option))
+                config.set('info', option, original_config.get('info', option))
             else:
-                dirname = os.path.dirname(
-                    original_config.get('info', 'payloadpath'))
+                dirname = os.path.dirname(original_config.get('info', 'payloadpath'))
                 filepath = os.path.join(dirname, payload_filename)
                 config.set('info', option, filepath)
 
         # update the context section
         config.add_section('context')
-        dirname = os.path.dirname(
-            original_config.get('context', 'update_path'))
+        dirname = os.path.dirname(original_config.get('context', 'update_path'))
         filepath = os.path.join(dirname, payload_filename)
         config.set('context', 'update_path', filepath)
         with open(config_path, 'wb') as configfile:
@@ -125,8 +122,7 @@ class PhishingTemplate(object):
         :rtype: None
         """
 
-        config_path = os.path.join(constants.PHISHING_PAGES_DIR,
-                                   self._name, 'config.ini')
+        config_path = os.path.join(constants.PHISHING_PAGES_DIR, self._name, 'config.ini')
         self.update_config_file(filename, config_path)
         # update payload attribute
         info = config_section_map(config_path, 'info')
@@ -365,8 +361,8 @@ class TemplateManager(object):
         # loop through the directory content
         for name in os.listdir(self._template_directory):
             # check to see if it is a directory and not in the database
-            if (os.path.isdir(os.path.join(self._template_directory, name)) and
-                    name not in self._templates):
+            if (os.path.isdir(os.path.join(self._template_directory, name))
+                    and name not in self._templates):
                 # check template
                 is_valid, output = self.is_valid_template(name)
                 # if template successfully validated, then...

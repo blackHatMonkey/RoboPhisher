@@ -10,7 +10,6 @@ import logging
 import scapy.layers.dot11 as dot11
 import robophisher.common.constants as constants
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -286,9 +285,8 @@ class AccessPointFinder(object):
 
         # with all the information gathered create and add the
         # access point
-        access_point = AccessPoint(name, mac_address, channel,
-                                   encryption_type,
-                                   capture_file=self._capture_file)
+        access_point = AccessPoint(
+            name, mac_address, channel, encryption_type, capture_file=self._capture_file)
         access_point.set_signal_strength(new_signal_strength)
         self._observed_access_points.append(access_point)
 
@@ -355,8 +353,7 @@ class AccessPointFinder(object):
 
         # continue to find clients until otherwise told
         while self._should_continue:
-            dot11.sniff(iface=self._interface, prn=self._process_packets,
-                        count=1, store=0)
+            dot11.sniff(iface=self._interface, prn=self._process_packets, count=1, store=0)
 
     def capture_aps(self):
         self._capture_file = constants.LOCS_DIR + "area_" +\
@@ -374,8 +371,7 @@ class AccessPointFinder(object):
         """
 
         # start finding access points in a separate thread
-        self._sniff_packets_thread = threading.Thread(
-            target=self._sniff_packets)
+        self._sniff_packets_thread = threading.Thread(target=self._sniff_packets)
         self._sniff_packets_thread.start()
 
         # start channel hopping in a separate thread
@@ -426,8 +422,7 @@ class AccessPointFinder(object):
             for channel in constants.ALL_2G_CHANNELS:
                 # added this check to reduce shutdown time
                 if self._should_continue:
-                    self._network_manager.set_interface_channel(
-                        self._interface, channel)
+                    self._network_manager.set_interface_channel(self._interface, channel)
                     time.sleep(3)
                 else:
                     break
@@ -509,8 +504,7 @@ class AccessPointFinder(object):
 
         # sort access points in descending order based on
         # signal strength
-        sorted_access_points = sorted(self._observed_access_points,
-                                      key=lambda ap: ap.get_signal_strength(),
-                                      reverse=True)
+        sorted_access_points = sorted(
+            self._observed_access_points, key=lambda ap: ap.get_signal_strength(), reverse=True)
 
         return sorted_access_points
