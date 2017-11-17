@@ -5,10 +5,19 @@ This module tries to install all the required software.
 
 from __future__ import print_function
 import sys
+import re
 import os
 from ctypes.util import find_library
 from setuptools import setup, find_packages, Command
 import robophisher.common.constants as constants
+
+
+with open('robophisher/__init__.py', 'r') as fd:
+    version = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+        fd.read(),
+        re.MULTILINE
+    ).group(1)
 
 
 class CleanCommand(Command):
@@ -146,7 +155,7 @@ LICENSE = "GPL"
 KEYWORDS = ["robophisher", "evil", "twin", "phishing"]
 PACKAGES = find_packages(exclude=["docs", "tests"])
 INCLUDE_PACKAGE_DATA = True
-VERSION = "1.0"
+VERSION = version
 CLASSIFIERS = ["Development Status :: 5 - Production/Stable",
                "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
                "Natural Language :: English", "Operating System :: Unix",

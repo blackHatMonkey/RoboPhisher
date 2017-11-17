@@ -146,7 +146,6 @@ def parse_args():
     return parser.parse_args()
 
 
-VERSION = "1.3GIT"
 args = parse_args()
 APs = {}  # for listing APs
 
@@ -548,7 +547,7 @@ class WifiphisherEngine:
 
         # Main loop.
         try:
-            main_info = tui.MainInfo(VERSION, essid, channel, ap_iface,
+            main_info = tui.MainInfo(__version__, essid, channel, ap_iface,
                                      self.em, phishinghttp,
                                      args)
             tui_main_object = tui.TuiMain()
@@ -561,7 +560,7 @@ class WifiphisherEngine:
 def run():
     try:
         print ('[' + T + '*' + W + '] Starting RoboPhisher %s at %s' %
-               (VERSION, time.strftime("%Y-%m-%d %H:%M")))
+               (__version__, time.strftime("%Y-%m-%d %H:%M")))
         engine = WifiphisherEngine()
         engine.start()
     except KeyboardInterrupt:
