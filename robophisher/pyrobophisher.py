@@ -149,20 +149,6 @@ def setup_logging(args):
         logger.info("Starting Wifiphisher")
 
 
-def set_ip_fwd():
-    """
-    Set kernel variables.
-    """
-    Popen(['sysctl', '-w', 'net.ipv4.ip_forward=1'], stdout=DN, stderr=PIPE)
-
-
-def set_route_localnet():
-    """
-    Set kernel variables.
-    """
-    Popen(['sysctl', '-w', 'net.ipv4.conf.all.route_localnet=1'], stdout=DN, stderr=PIPE)
-
-
 def kill_interfering_procs():
     """
     Kill the interfering processes that may interfere the wireless card
@@ -184,8 +170,7 @@ def kill_interfering_procs():
     proc = Popen(['ps', '-A'], stdout=subprocess.PIPE)
     output = proc.communicate()[0]
     # total processes in the system
-    sys_procs = output.splitlines()
-    # loop each interfering processes and find if it is running
+    sys_procs = output.splitlines()  # loop each interfering processes and find if it is running
     for interfering_proc in INTERFERING_PROCS:
         for proc in sys_procs:
             # kill all the processes name equal to interfering_proc
@@ -202,7 +187,6 @@ class WifiphisherEngine:
         self.network_manager = interfaces.NetworkManager()
         self.template_manager = phishingpage.TemplateManager()
         self.access_point = accesspoint.AccessPoint()
-        self.fw = firewall.Fw()
         self.em = extensions.ExtensionManager(self.network_manager)
         self.opmode = opmode.OpMode()
 
@@ -224,7 +208,13 @@ class WifiphisherEngine:
         self.access_point.on_exit()
         self.network_manager.on_exit()
         self.template_manager.on_exit()
-        self.fw.on_exit()
+
+        clear_rules_result = firewall.clear_rules()
+        if not clear_rules_result.status:
+            message = ("Failed to reset the routing rules:\n{}".format(
+                clear_rules_result.error_message))
+            print(message)
+            logger.error(message)
 
         if os.path.isfile('/tmp/robophisher-webserver.tmp'):
             os.remove('/tmp/robophisher-webserver.tmp')
@@ -346,12 +336,13 @@ class WifiphisherEngine:
                 logger.info("Changing {} MAC address to {}".format(mon_iface, mon_mac))
                 print("[{0}+{1}] Changing {2} MAC addr to {3}".format(G, W, mon_iface, mon_mac))
 
-        if self.opmode.internet_sharing_enabled():
-            self.fw.nat(ap_iface, args.internetinterface)
-            set_ip_fwd()
-        else:
-            self.fw.redirect_requests_localhost()
-        set_route_localnet()
+        redirect_localhost_result = firewall.redirect_to_localhost()
+        if not redirect_localhost_result.status:
+            message = ("Failed to redirect all requests to local host:\n{}".format(
+                redirect_localhost_result.error_message))
+            print(message)
+            logger.error(message)
+            self.stop()
 
         print '[' + T + '*' + W + '] Cleared leases, started DHCP, set up iptables'
         time.sleep(1)
@@ -497,8 +488,8 @@ class WifiphisherEngine:
 
         # Main loop.
         try:
-            main_info = tui.MainInfo(robophisher.__version__, essid, channel, ap_iface, self.em, phishinghttp,
-                                     args)
+            main_info = tui.MainInfo(robophisher.__version__, essid, channel, ap_iface, self.em,
+                                     phishinghttp, args)
             tui_main_object = tui.TuiMain()
             curses.wrapper(tui_main_object.gather_info, main_info)
             self.stop()

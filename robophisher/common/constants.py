@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #pylint: skip-file
 import os
+import collections
 
 dir_of_executable = os.path.dirname(__file__)
 path_to_project_root = os.path.abspath(os.path.join(dir_of_executable, '../../robophisher'))
@@ -133,3 +134,6 @@ AP_SEL_ATTRS = 'interface mac_matcher network_manager args'
 
 # Fourway handshake extension
 CONST_A = "Pairwise key expansion"
+
+RESULT = collections.namedtuple("Result", "status, error_message")
+RESULT_NO_ERROR = RESULT(True, None)
