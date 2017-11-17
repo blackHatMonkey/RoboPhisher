@@ -8,7 +8,7 @@ import sys
 import os
 from ctypes.util import find_library
 from setuptools import setup, find_packages, Command
-import wifiphisher.common.constants as constants
+import robophisher.common.constants as constants
 
 
 class CleanCommand(Command):
@@ -137,16 +137,16 @@ def get_libdbus():
 get_libdbus()
 
 # setup settings
-NAME = "wifiphisher"
-AUTHOR = "sophron"
-AUTHOR_EMAIL = "sophron@latthi.com"
-URL = "https://github.com/wifiphisher/wifiphisher"
+NAME = "robophisher"
+AUTHOR = "blackHatMonkey"
+AUTHOR_EMAIL = "brian.smith@riseup.net"
+URL = "https://github.com/blackHatMonkey/RoboPhisher"
 DESCRIPTION = "Automated phishing attacks against Wi-Fi networks"
 LICENSE = "GPL"
-KEYWORDS = ["wifiphisher", "evil", "twin", "phishing"]
+KEYWORDS = ["robophisher", "evil", "twin", "phishing"]
 PACKAGES = find_packages(exclude=["docs", "tests"])
 INCLUDE_PACKAGE_DATA = True
-VERSION = "1.3"
+VERSION = "1.0"
 CLASSIFIERS = ["Development Status :: 5 - Production/Stable",
                "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
                "Natural Language :: English", "Operating System :: Unix",
@@ -155,7 +155,7 @@ CLASSIFIERS = ["Development Status :: 5 - Production/Stable",
                "Topic :: System :: Networking", "Intended Audience :: End Users/Desktop",
                "Intended Audience :: System Administrators",
                "Intended Audience :: Information Technology"]
-ENTRY_POINTS = {"console_scripts": ["wifiphisher = wifiphisher.pywifiphisher:run"]}
+ENTRY_POINTS = {"console_scripts": ["robophisher= robophisher.pyrobophisher:run"]}
 INSTALL_REQUIRES = ["PyRIC", "tornado", "blessings>=1.6", "dbus-python",
                     "pbkdf2", "roguehostapd"]
 CMDCLASS = {"clean": CleanCommand,}
@@ -169,14 +169,3 @@ setup(name=NAME, author=AUTHOR, author_email=AUTHOR_EMAIL, description=DESCRIPTI
 # Get hostapd or dnsmasq if needed
 get_hostapd()
 get_dnsmasq()
-
-print()
-print("                     _  __ _       _     _     _               ")
-print("                    (_)/ _(_)     | |   (_)   | |              ")
-print("  ((.))    __      ___| |_ _ _ __ | |__  _ ___| |__   ___ _ __ ")
-print(r"    |      \ \ /\ / / |  _| | '_ \| '_ \| / __| '_ \ / _ \ '__|")
-print(r"   /_\      \ V  V /| | | | | |_) | | | | \__ \ | | |  __/ |   ")
-print(r"  /___\      \_/\_/ |_|_| |_| .__/|_| |_|_|___/_| |_|\___|_|   ")
-print(r" /     \                    | |                                ")
-print("                            |_|                                ")
-print("                                                               ")

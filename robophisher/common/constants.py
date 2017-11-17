@@ -5,7 +5,7 @@ import os
 
 dir_of_executable = os.path.dirname(__file__)
 path_to_project_root = os.path.abspath(
-    os.path.join(dir_of_executable, '../../wifiphisher'))
+    os.path.join(dir_of_executable, '../../robophisher'))
 dir_of_data = path_to_project_root + '/data/'
 
 # Basic configuration
@@ -13,12 +13,11 @@ DEV = 1
 LURE10_EXTENSION = "lure10"
 HANDSHAKE_VALIDATE_EXTENSION = "handshakeverify"
 DEFAULT_EXTENSIONS = ["deauth"]
-EXTENSIONS_LOADPATH = "wifiphisher.extensions."
+EXTENSIONS_LOADPATH = "robophisher.extensions."
 PORT = 8080
 SSL_PORT = 443
 CHANNEL = 6
 ALL_2G_CHANNELS = range(1, 14)
-WEBSITE = "https://wifiphisher.org"
 PUBLIC_DNS = "8.8.8.8"
 PEM = dir_of_data + 'cert/server.pem'
 PHISHING_PAGES_DIR = dir_of_data + "phishing-pages/"
@@ -89,7 +88,7 @@ T = '\033[93m'   # tan
 # possible values for debug levels are:
 # CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
 LOG_LEVEL = 'INFO'
-LOG_FILEPATH = 'wifiphisher.log'
+LOG_FILEPATH = 'robophisher.log'
 LOGGING_CONFIG = {
     'version': 1,
     # Defined the handlers

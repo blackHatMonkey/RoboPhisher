@@ -8,7 +8,7 @@ import threading
 import time
 import logging
 import scapy.layers.dot11 as dot11
-import wifiphisher.common.constants as constants
+import robophisher.common.constants as constants
 
 
 logger = logging.getLogger(__name__)

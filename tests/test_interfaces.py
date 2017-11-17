@@ -3,8 +3,8 @@
 
 import unittest
 import mock
-import wifiphisher.common.interfaces as interfaces
-import wifiphisher.common.constants as constants
+import robophisher.common.interfaces as interfaces
+import robophisher.common.constants as constants
 import pyric
 import dbus
 
@@ -262,7 +262,7 @@ class TestIsManagedByNetworkManager(unittest.TestCase):
         message = "the managed property should be true"
         self.assertFalse(is_managed, message)
 
-    @mock.patch("wifiphisher.common.interfaces.dbus")
+    @mock.patch("robophisher.common.interfaces.dbus")
     def test_is_managed_by_network_manager_unexpected_error_error(self, my_dbus):
         """
         Test is_managed_by_network_manager function when an
@@ -304,7 +304,7 @@ class TestInterfacePropertyDetector(unittest.TestCase):
         mac_address = "00:00:00:00:00:00"
         self.adapter = interfaces.NetworkAdapter("wlan0", card, mac_address)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_interface_property_detector_has_monitor_mode(self, pyric):
         """
         Test interface_property_detector function when the interface
@@ -318,7 +318,7 @@ class TestInterfacePropertyDetector(unittest.TestCase):
         message = "Failed to get monitor mode support when interface has support"
         self.assertTrue(self.adapter.has_monitor_mode, message)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_interface_property_detector_no_monitor_mode(self, pyric):
         """
         Test interface_property_detector function when the interface
@@ -332,7 +332,7 @@ class TestInterfacePropertyDetector(unittest.TestCase):
         message = "Shows interface has monitor mode when it does not"
         self.assertFalse(self.adapter.has_monitor_mode, message)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_interface_property_detector_has_ap_mode(self, pyric):
         """
         Test interface_property_detector function when the interface
@@ -346,7 +346,7 @@ class TestInterfacePropertyDetector(unittest.TestCase):
         message = "Failed to get AP mode support when interface has support"
         self.assertTrue(self.adapter.has_ap_mode, message)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_interface_property_detector_no_ap_mode(self, pyric):
         """
         Test interface_property_detector function when the interface
@@ -571,7 +571,7 @@ class TestNetworkManager(unittest.TestCase):
         message = "Failed to validate an interface with internet mode"
         self.assertTrue(actual, message)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_set_interface_mode_interface_none(self, pyric):
         """ Test set_interface_mode method under normal conditions """
 
@@ -867,7 +867,7 @@ class TestNetworkManager(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_unblock_interface_is_blocked_none(self, pyric):
         """
         Tests unblock_interface when the interface is blocked
@@ -884,7 +884,7 @@ class TestNetworkManager(unittest.TestCase):
 
         pyric.unblock.assert_called_once_with(interface_object)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_unblock_interface_not_blocked_none(self, pyric):
         """
         Tests unblock_interface when the interface is blocked
@@ -901,7 +901,7 @@ class TestNetworkManager(unittest.TestCase):
 
         pyric.unblock.assert_not_called()
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_set_interface_channel_normal_none(self, pyric):
         """
         Tests set_interface_channel method when setting a channel
@@ -917,7 +917,7 @@ class TestNetworkManager(unittest.TestCase):
 
         pyric.chset.assert_called_once_with(interface_object, channel)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_start_no_interface_none(self, pyric):
         """
         Tests start method when no interface is found
@@ -928,7 +928,7 @@ class TestNetworkManager(unittest.TestCase):
         # just checking to make sure no errors were produced
         self.assertIsNone(self.network_manager.start())
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_start_has_interface_none(self, pyric):
         """
         Tests start method when interface(s) has been found
@@ -940,7 +940,7 @@ class TestNetworkManager(unittest.TestCase):
         # just checking to make sure no errors were produced
         self.assertIsNone(self.network_manager.start())
 
-    @mock.patch("wifiphisher.common.interfaces.pyw.getcard")
+    @mock.patch("robophisher.common.interfaces.pyw.getcard")
     def test_start_interface_not_compatible_none(self, pyw):
         """
         Tests start method when interface is not supported
@@ -949,7 +949,7 @@ class TestNetworkManager(unittest.TestCase):
         pyw.side_effect = pyric.error(93, "Device does not support nl80211")
         self.network_manager.start()
 
-    @mock.patch("wifiphisher.common.interfaces.pyw.getcard")
+    @mock.patch("robophisher.common.interfaces.pyw.getcard")
     def test_start_interface_no_such_device_none(self, pyw):
         """
         Tests start method when there is no such interface
@@ -960,7 +960,7 @@ class TestNetworkManager(unittest.TestCase):
         # just checking to make sure error is not raised
         self.assertIsNone(self.network_manager.start())
 
-    @mock.patch("wifiphisher.common.interfaces.pyw.getcard")
+    @mock.patch("robophisher.common.interfaces.pyw.getcard")
     def test_start_interface_unidentified_error_error(self, pyw):
         """
         Tests start method when an unidentified error has happened
@@ -975,7 +975,7 @@ class TestNetworkManager(unittest.TestCase):
         the_exception = error.exception
         self.assertEqual(the_exception[0], 2220, "The error was not caught.")
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_on_exit_no_active_none(self, pyw):
         """
         Tests on_exit method when there are no active interfaces
@@ -984,7 +984,7 @@ class TestNetworkManager(unittest.TestCase):
         self.network_manager.on_exit()
         pyw.modeset.assert_not_called()
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_on_exit_has_active_none(self, pyric):
         """
         Tests on_exit method when there are active interfaces
@@ -1001,7 +1001,7 @@ class TestNetworkManager(unittest.TestCase):
 
         pyric.modeset.assert_called_once_with(interface_object, mode)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_set_interface_mac_invalid_mac_error(self, pyw):
         """
         Test set_interface_mac with an invalid MAC address to raise an
@@ -1020,7 +1020,7 @@ class TestNetworkManager(unittest.TestCase):
         with self.assertRaises(interfaces.InvalidMacAddressError):
             self.network_manager.set_interface_mac(interface_name, mac_address)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_set_interface_mac_valid_mac_none(self, pyw):
         """
         Test set_interface_mac with an valid MAC address to simulate
@@ -1038,7 +1038,7 @@ class TestNetworkManager(unittest.TestCase):
         message = "Failed when a valid mac address was provided"
         self.assertIsNone(operation, message)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_set_interface_unexpected_error(self, pyw):
         """
         Test set_interface_mac when an unexpected error occurs
@@ -1058,7 +1058,7 @@ class TestNetworkManager(unittest.TestCase):
 
         self.assertEqual(error.exception[0], 5534, "Unexpected error")
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_set_interface_mac_random_none(self, pyw):
         """
         Test set_interface_mac_random under normal conditions
@@ -1072,7 +1072,7 @@ class TestNetworkManager(unittest.TestCase):
         self.network_manager._name_to_object[interface_name] = adapter
         self.network_manager._active.add(interface_name)
 
-        with mock.patch("wifiphisher.common.interfaces.generate_random_address") as generator:
+        with mock.patch("robophisher.common.interfaces.generate_random_address") as generator:
             generator.return_value = new_mac_address
             self.network_manager.set_interface_mac_random(interface_name)
 
@@ -1091,7 +1091,7 @@ class TestNetworkManager(unittest.TestCase):
 
         self.assertEqual(self.network_manager.get_interface_mac(interface_name), self.mac_address)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_up_interface(self, pyric):
         """
         Test interface up
@@ -1103,7 +1103,7 @@ class TestNetworkManager(unittest.TestCase):
         self.network_manager.up_interface(interface_name)
         pyric.up.assert_called_once_with(adapter.card)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_down_interface(self, pyric):
         """
         Test interface down
@@ -1115,7 +1115,7 @@ class TestNetworkManager(unittest.TestCase):
         self.network_manager.down_interface(interface_name)
         pyric.down.assert_called_once_with(adapter.card)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_add_virtual_interface_success(self, pyric):
         """
         Test add_virtual_interface correctly add vif
@@ -1128,7 +1128,7 @@ class TestNetworkManager(unittest.TestCase):
         expected = 'wlan1'
         self.assertEqual(actual, expected)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_remove_vifs_added(self, pyric):
         card = mock.Mock()
         self.network_manager._vifs_add = set()
@@ -1137,7 +1137,7 @@ class TestNetworkManager(unittest.TestCase):
         self.network_manager.remove_vifs_added()
         pyric.devdel.assert_called_once()
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_add_virtual_interface_first_run_error_second_run_success(self, mock_pyric):
         """
         Test add_virtual_interface when the interface name already exist
@@ -1158,7 +1158,7 @@ class TestNetworkManager(unittest.TestCase):
         actual = self.network_manager.add_virtual_interface(card)
         self.assertEqual(actual, expected)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_is_add_vif_required_one_phy_one_vif_tuple_card_true(self, pyric):
         """
         Test only has one card support both monitor and ap
@@ -1176,7 +1176,7 @@ class TestNetworkManager(unittest.TestCase):
         self.assertEqual(actual_card, card)
         self.assertEqual(is_single_perfect_card, True)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_is_add_vif_required_one_phy_two_vifs_tuple_none_true(self, pyric):
         """
         Test only has one card support both monitor and ap but the number of
@@ -1195,7 +1195,7 @@ class TestNetworkManager(unittest.TestCase):
         self.assertEqual(actual_card, None)
         self.assertEqual(is_single_perfect_card, True)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_is_add_vif_required_two_phy_two_vifs_tuple_card_true(self, pyric):
         """
         Test the system has two cards but only one phy supports both AP and
@@ -1230,7 +1230,7 @@ class TestNetworkManager(unittest.TestCase):
         self.assertEqual(actual_card, card1)
         self.assertEqual(is_single_perfect_card, True)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_is_add_vif_required_two_phy_two_vifs_tuple_none_false(self, pyric):
         """
         Test the system has two cards and one card support AP and the other
@@ -1265,7 +1265,7 @@ class TestNetworkManager(unittest.TestCase):
         self.assertEqual(actual_card, None)
         self.assertEqual(is_single_perfect_card, False)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_is_add_vif_required_one_ap_one_internet_none_false(self, pyric):
         """
         Test the system has two cards and one card support AP the other card
@@ -1304,7 +1304,7 @@ class TestNetworkManager(unittest.TestCase):
 class TestGenerateRandomAddress(unittest.TestCase):
     """ Test generate_random_address function """
 
-    @mock.patch("wifiphisher.common.interfaces.random")
+    @mock.patch("robophisher.common.interfaces.random")
     def test_generate_random_address(self, random_module):
         """
         Test generate_random_address function to make sure that the
@@ -1319,7 +1319,7 @@ class TestGenerateRandomAddress(unittest.TestCase):
 
 
 class TestIsWirelessInterface(unittest.TestCase):
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_is_wireless_interface_false(self, pyric):
         pyric.iswireless.return_value = False
         is_wireless = True
@@ -1329,7 +1329,7 @@ class TestIsWirelessInterface(unittest.TestCase):
             " Shows interface is wireless adapter when it is not"
         self.assertFalse(is_wireless, message)
 
-    @mock.patch("wifiphisher.common.interfaces.pyw")
+    @mock.patch("robophisher.common.interfaces.pyw")
     def test_is_wireless_interface_true(self, pyric):
         """
         Test is_wireless_interface and the adatper is wireless card
@@ -1341,7 +1341,7 @@ class TestIsWirelessInterface(unittest.TestCase):
         self.assertTrue(actual, message)
 
 
-@mock.patch("wifiphisher.common.interfaces.pyric.pyw")
+@mock.patch("robophisher.common.interfaces.pyric.pyw")
 def test_does_have_mode_has_mode(pyric):
     """
     Test does_have_mode function when the interface has the requested
@@ -1357,7 +1357,7 @@ def test_does_have_mode_has_mode(pyric):
     assert interfaces.does_have_mode(name, mode) == True, message
 
 
-@mock.patch("wifiphisher.common.interfaces.pyric.pyw")
+@mock.patch("robophisher.common.interfaces.pyric.pyw")
 def test_does_have_mode_has_not_mode(pyric):
     """
     Test does_have_mode function when the interface doesn't have the

@@ -9,9 +9,9 @@ import re
 from collections import namedtuple
 from subprocess import check_output
 import curses
-import wifiphisher.common.constants as constants
-import wifiphisher.common.recon as recon
-import wifiphisher.common.phishingpage as phishingpage
+import robophisher.common.constants as constants
+import robophisher.common.recon as recon
+import robophisher.common.phishingpage as phishingpage
 
 
 # information for the main terminal
@@ -451,7 +451,7 @@ class TuiApSel(object):
         :type self: TuiApSel
         :param screen: A curses window object
         :type screen: _curses.curses.window
-        :param info: A namedtuple of information from pywifiphisher
+        :param info: A namedtuple of information from pyrobophisher
         :type info: namedtuple
         :return ApDisplayInfo object
         :rtype: ApDisplayInfo
@@ -493,12 +493,12 @@ class TuiApSel(object):
 
     def gather_info(self, screen, info):
         """
-        Get the information from pywifiphisher and print them out
+        Get the information from pyrobophisher and print them out
         :param self: A TuiApSel object
         :type self: TuiApSel
         :param screen: A curses window object
         :type screen: _curses.curses.window
-        :param info: A namedtuple of information from pywifiphisher
+        :param info: A namedtuple of information from pyrobophisher
         :type info: namedtuple
         :return AccessPoint object if users type enter
         :rtype AccessPoint if users type enter else None
@@ -807,7 +807,7 @@ class TuiMain(object):
 
     def gather_info(self, screen, info):
         """
-        Get the information from pywifiphisher and print them out
+        Get the information from pyrobophisher and print them out
         :param self: A TuiMain object
         :param screen: A curses window object
         :param info: A namedtuple of printing information
@@ -917,7 +917,7 @@ class TuiMain(object):
             screen.addstr(1, max_window_length - 30, "|")
             # continue from the "Wifiphisher"
             screen.addstr(1, max_window_length - 29,
-                          " Wifiphisher " + info.version, self.blue_text)
+                          " RoboPhisher" + info.version, self.blue_text)
 
             screen.addstr(2, max_window_length - 30,
                           "|" + " ESSID: " + info.essid)
@@ -952,9 +952,9 @@ class TuiMain(object):
 
             # print the http request section
             screen.addstr(13, 0, "HTTP requests: ", self.blue_text)
-            if os.path.isfile('/tmp/wifiphisher-webserver.tmp'):
+            if os.path.isfile('/tmp/robophisher-webserver.tmp'):
                 http_output = check_output(['tail', '-5',
-                                            '/tmp/wifiphisher-webserver.tmp'])
+                                            '/tmp/robophisher-webserver.tmp'])
                 self.print_http_requests(screen, 14, http_output)
         except curses.error:
             pass

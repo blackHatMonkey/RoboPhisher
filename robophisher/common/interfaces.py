@@ -9,9 +9,9 @@ import logging
 import pyric
 import pyric.pyw as pyw
 import dbus
-import wifiphisher.common.constants as constants
+import robophisher.common.constants as constants
 
-logger = logging.getLogger("wifiphisher.interfaces")
+logger = logging.getLogger("robophisher.interfaces")
 
 
 class InvalidInterfaceError(Exception):
@@ -443,7 +443,7 @@ class NetworkManager(object):
         :type interface_name: str
         :return: None
         :rtype: None
-        ..note: Let the pywifiphisher decide when to up the
+        ..note: Let the pyrobophisher decide when to up the
         interface since some cards cannot up two virtual interface
         with managed mode in the same time.
         """
@@ -739,7 +739,7 @@ class NetworkManager(object):
 def is_add_vif_required(args):
     """
     Return the card if only that card support both monitor and ap
-    :param args: Arguemnt from pywifiphisher
+    :param args: Arguemnt from pyrobophisher
     :type args: parse.args
     :return: tuple of card and is_frequency_hop_allowed
     :rtype: tuple

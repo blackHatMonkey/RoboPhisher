@@ -6,7 +6,7 @@ Wifiphisher.py
 import os
 import ConfigParser
 from shutil import copyfile
-import wifiphisher.common.constants as constants
+import robophisher.common.constants as constants
 
 
 def config_section_map(config_file, section):

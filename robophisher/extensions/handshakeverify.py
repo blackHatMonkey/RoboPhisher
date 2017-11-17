@@ -12,8 +12,8 @@ from collections import deque
 from collections import defaultdict
 from pbkdf2 import PBKDF2
 import scapy.layers.dot11 as dot11
-import wifiphisher.common.constants as constants
-import wifiphisher.common.extensions as extensions
+import robophisher.common.constants as constants
+import robophisher.common.extensions as extensions
 
 
 logger = logging.getLogger(__name__)
