@@ -17,6 +17,7 @@ from threading import Thread
 from subprocess import Popen, PIPE, check_output
 from shutil import copyfile
 from robophisher.common.constants import *
+import robophisher
 import robophisher.common.extensions as extensions
 import robophisher.common.recon as recon
 import robophisher.common.phishingpage as phishingpage
@@ -496,7 +497,7 @@ class WifiphisherEngine:
 
         # Main loop.
         try:
-            main_info = tui.MainInfo(__version__, essid, channel, ap_iface, self.em, phishinghttp,
+            main_info = tui.MainInfo(robophisher.__version__, essid, channel, ap_iface, self.em, phishinghttp,
                                      args)
             tui_main_object = tui.TuiMain()
             curses.wrapper(tui_main_object.gather_info, main_info)
@@ -508,7 +509,7 @@ class WifiphisherEngine:
 def run():
     try:
         print('[' + T + '*' + W + '] Starting RoboPhisher %s at %s' %
-              (__version__, time.strftime("%Y-%m-%d %H:%M")))
+              (robophisher.__version__, time.strftime("%Y-%m-%d %H:%M")))
         engine = WifiphisherEngine()
         engine.start()
     except KeyboardInterrupt:
