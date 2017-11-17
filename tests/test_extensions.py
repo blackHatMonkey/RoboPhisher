@@ -13,9 +13,9 @@ path_to_project_root = os.path.abspath(os.path.join(dir_of_executable, '..'))
 sys.path.insert(0, path_to_project_root)
 os.chdir(path_to_project_root)
 
-import wifiphisher.common.interfaces as interfaces
-import wifiphisher.common.extensions as extensions
-import wifiphisher.common.constants as constants
+import robophisher.common.interfaces as interfaces
+import robophisher.common.extensions as extensions
+import robophisher.common.constants as constants
 import scapy.layers.dot11 as dot11
 
 CONTENTS_EXTENSION_1 = """
@@ -94,10 +94,10 @@ class TestExtensionManager(unittest.TestCase):
             f.write(CONTENTS_EXTENSION_3)
             f.close()
 
-    @mock.patch("wifiphisher.common.constants.DEFAULT_EXTENSIONS",
+    @mock.patch("robophisher.common.constants.DEFAULT_EXTENSIONS",
                 ["extension1"])
     @mock.patch(
-        "wifiphisher.common.constants.EXTENSIONS_LOADPATH",
+        "robophisher.common.constants.EXTENSIONS_LOADPATH",
         "tests.extensions.")
     def test_single_extension(self):
         # We need a NM to init EM
@@ -125,10 +125,10 @@ class TestExtensionManager(unittest.TestCase):
         assert em.get_output() == ["one", "two"]
 
     @mock.patch(
-        "wifiphisher.common.constants.DEFAULT_EXTENSIONS", [
+        "robophisher.common.constants.DEFAULT_EXTENSIONS", [
             "extension1", "extension2", "extension3"])
     @mock.patch(
-        "wifiphisher.common.constants.EXTENSIONS_LOADPATH",
+        "robophisher.common.constants.EXTENSIONS_LOADPATH",
         "tests.extensions.")
     def test_multiple_extensions(self):
         # We need a NM to init EM

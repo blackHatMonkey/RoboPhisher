@@ -16,17 +16,17 @@ import signal
 from threading import Thread
 from subprocess import Popen, PIPE, check_output
 from shutil import copyfile
-from wifiphisher.common.constants import *
-import wifiphisher.common.extensions as extensions
-import wifiphisher.common.recon as recon
-import wifiphisher.common.phishingpage as phishingpage
-import wifiphisher.common.phishinghttp as phishinghttp
-import wifiphisher.common.macmatcher as macmatcher
-import wifiphisher.common.interfaces as interfaces
-import wifiphisher.common.firewall as firewall
-import wifiphisher.common.accesspoint as accesspoint
-import wifiphisher.common.tui as tui
-import wifiphisher.common.opmode as opmode
+from robophisher.common.constants import *
+import robophisher.common.extensions as extensions
+import robophisher.common.recon as recon
+import robophisher.common.phishingpage as phishingpage
+import robophisher.common.phishinghttp as phishinghttp
+import robophisher.common.macmatcher as macmatcher
+import robophisher.common.interfaces as interfaces
+import robophisher.common.firewall as firewall
+import robophisher.common.accesspoint as accesspoint
+import robophisher.common.tui as tui
+import robophisher.common.opmode as opmode
 
 logger = logging.getLogger(__name__)
 
@@ -242,7 +242,7 @@ class WifiphisherEngine:
     def stop(self):
         if DEV:
             print "[" + G + "+" + W + "] Show your support!"
-            print "[" + G + "+" + W + "] Follow us: https://twitter.com/wifiphisher"
+            print "[" + G + "+" + W + "] Follow us: https://twitter.com/robophisher"
             print "[" + G + "+" + W + "] Like us: https://www.facebook.com/Wifiphisher"
         print "[" + G + "+" + W + "] Captured credentials:"
         for cred in phishinghttp.creds:
@@ -259,8 +259,8 @@ class WifiphisherEngine:
         self.template_manager.on_exit()
         self.fw.on_exit()
 
-        if os.path.isfile('/tmp/wifiphisher-webserver.tmp'):
-            os.remove('/tmp/wifiphisher-webserver.tmp')
+        if os.path.isfile('/tmp/robophisher-webserver.tmp'):
+            os.remove('/tmp/robophisher-webserver.tmp')
 
         print '[' + R + '!' + W + '] Closing'
         sys.exit(0)
@@ -560,8 +560,8 @@ class WifiphisherEngine:
 
 def run():
     try:
-        print ('[' + T + '*' + W + '] Starting Wifiphisher %s ( %s ) at %s' %
-               (VERSION, WEBSITE, time.strftime("%Y-%m-%d %H:%M")))
+        print ('[' + T + '*' + W + '] Starting RoboPhisher %s at %s' %
+               (VERSION, time.strftime("%Y-%m-%d %H:%M")))
         engine = WifiphisherEngine()
         engine.start()
     except KeyboardInterrupt:

@@ -9,9 +9,9 @@ import os
 import logging
 import argparse
 import pyric
-import wifiphisher.common.interfaces as interfaces
-import wifiphisher.common.constants as constants
-import wifiphisher.extensions.handshakeverify as handshakeverify
+import robophisher.common.interfaces as interfaces
+import robophisher.common.constants as constants
+import robophisher.extensions.handshakeverify as handshakeverify
 
 
 logger = logging.getLogger(__name__)

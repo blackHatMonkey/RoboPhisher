@@ -5,8 +5,8 @@ from collections import defaultdict
 import unittest
 import mock
 import scapy.layers.dot11 as dot11
-import wifiphisher.extensions.deauth as deauth
-import wifiphisher.common.constants as constants
+import robophisher.extensions.deauth as deauth
+import robophisher.common.constants as constants
 
 
 class TestDeauth(unittest.TestCase):
@@ -369,7 +369,7 @@ class TestDeauth(unittest.TestCase):
         # check the disassociation packet
         self.assertEqual(result[1], [], message1)
 
-    @mock.patch("wifiphisher.extensions.deauth.ord")
+    @mock.patch("robophisher.extensions.deauth.ord")
     def test_get_packet_essid_flag_malformed0_channel_empty_list(self, mock_ord):
         """
         Test get_packet method when --essid flag is given. This is the
@@ -401,7 +401,7 @@ class TestDeauth(unittest.TestCase):
         # check the disassociation packet
         self.assertEqual(result[1], [], message1)
 
-    @mock.patch("wifiphisher.extensions.deauth.ord")
+    @mock.patch("robophisher.extensions.deauth.ord")
     def test_get_packet_essid_flag_malformed1_channel_empty_list(self, mock_ord):
         """
         Test get_packet method when --essid flag is given. This is the
@@ -433,7 +433,7 @@ class TestDeauth(unittest.TestCase):
         # check the disassociation packet
         self.assertEqual(result[1], [], message1)
 
-    @mock.patch("wifiphisher.extensions.deauth.ord")
+    @mock.patch("robophisher.extensions.deauth.ord")
     def test_get_packet_essid_flag_malformed2_channel_empty_list(self, mock_ord):
         """
         Test get_packet method when --essid flag is given. This is the

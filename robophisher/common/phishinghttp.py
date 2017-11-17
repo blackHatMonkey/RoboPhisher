@@ -4,9 +4,9 @@ from tornado.escape import json_decode
 import tornado.ioloop
 import tornado.web
 import os.path
-import wifiphisher.common.uimethods as uimethods
-import wifiphisher.common.extensions as extensions
-import wifiphisher.common.constants as constants
+import robophisher.common.uimethods as uimethods
+import robophisher.common.extensions as extensions
+import robophisher.common.constants as constants
 
 
 hn = logging.NullHandler()
@@ -94,7 +94,7 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
         file_path = template_directory + render_file
         self.render(file_path, **template.get_context())
 
-        log_file_path = "/tmp/wifiphisher-webserver.tmp"
+        log_file_path = "/tmp/robophisher-webserver.tmp"
         with open(log_file_path, "a+") as log_file:
             log_file.write("GET request from {0} for {1}\n".format(
                 self.request.remote_ip, self.request.full_url()))
@@ -126,7 +126,7 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
         if content_type.startswith(constants.VALID_POST_CONTENT_TYPE):
             post_data = tornado.escape.url_unescape(self.request.body)
             # log the data
-            log_file_path = "/tmp/wifiphisher-webserver.tmp"
+            log_file_path = "/tmp/robophisher-webserver.tmp"
             with open(log_file_path, "a+") as log_file:
                 log_file.write("POST request from {0} with {1}\n".format(
                     self.request.remote_ip, post_data))

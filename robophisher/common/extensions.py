@@ -10,7 +10,7 @@ import collections
 from collections import defaultdict
 import scapy.layers.dot11 as dot11
 import scapy.arch.linux as linux
-import wifiphisher.common.constants as constants
+import robophisher.common.constants as constants
 
 
 logger = logging.getLogger(__name__)
