@@ -4,7 +4,7 @@ Phishing Scenarios
 Templates
 -----------
 
-Wifiphisher supports community-built templates for different phishing scenarios.
+RoboPhisher supports community-built templates for different phishing scenarios.
 Currently, the following phishing scenarios are in place
 
 

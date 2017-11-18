@@ -5,7 +5,7 @@ User's guide
 --------------
 Dependencies
 --------------
-Wifiphisher currently has the following dependencies:
+RoboPhisher currently has the following dependencies:
 
 - PyRIC_
 - Blessings_

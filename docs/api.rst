@@ -15,11 +15,11 @@ Command Line Arguments
     .. hint::
       .. code-block:: bash
 
-        [sudo] wifiphisher -h
+        [sudo] RoboPhisher -h
 
       .. code-block:: bash
 
-        [sudo] wifiphisher --help
+        [sudo] RoboPhisher --help
 
 .. _jamming interface:
 .. function:: -jI
@@ -30,11 +30,11 @@ Command Line Arguments
     .. hint::
       .. code-block:: bash
 
-        [sudo] wifiphisher -jI wlan1
+        [sudo] RoboPhisher -jI wlan1
 
       .. code-block:: bash
 
-        [sudo] wifiphisher --jamminginterface wlan1
+        [sudo] RoboPhisher --jamminginterface wlan1
 
     .. warning::
       The same interface can **not** be used for both `jamming interface`_ and `ap interface`_ .
@@ -48,11 +48,11 @@ Command Line Arguments
     .. hint::
       .. code-block:: bash
 
-        [sudo] wifiphisher -aI wlan1
+        [sudo] RoboPhisher -aI wlan1
 
       .. code-block:: bash
 
-        [sudo] wifiphisher --apinterface wlan1
+        [sudo] RoboPhisher --apinterface wlan1
 
     .. warning::
       The same interface can **not** be used for both `jamming interface`_ and `ap interface`_ .
@@ -67,11 +67,11 @@ Command Line Arguments
     .. hint::
       .. code-block:: bash
 
-        [sudo] wifiphisher -nJ
+        [sudo] RoboPhisher -nJ
 
       .. code-block:: bash
 
-        [sudo] wifiphisher -nojamming
+        [sudo] RoboPhisher -nojamming
 
 .. _essid:
 .. function:: -e
@@ -82,11 +82,11 @@ Command Line Arguments
     .. hint::
       .. code-block:: bash
 
-        [sudo] wifiphisher -e "FREE WIFI"
+        [sudo] RoboPhisher -e "FREE WIFI"
 
       .. code-block:: bash
 
-        [sudo] wifiphisher --essid "FREE WIFI"
+        [sudo] RoboPhisher --essid "FREE WIFI"
 
     .. warning::
       This option will skip access point selection phase.
@@ -100,11 +100,11 @@ Command Line Arguments
     .. hint::
       .. code-block:: bash
 
-        [sudo] wifiphisher -p firmware_upgrade
+        [sudo] RoboPhisher -p firmware_upgrade
 
       .. code-block:: bash
 
-        [sudo] wifiphisher --phishingscenario firmware_upgrade
+        [sudo] RoboPhisher --phishingscenario firmware_upgrade
 
     .. note::
       The name of the phishing scenario you specify here must match the folder name of the
@@ -123,11 +123,11 @@ Command Line Arguments
     .. hint::
       .. code-block:: bash
 
-        [sudo] wifiphisher -pk s3cr3tp4ssw0rd
+        [sudo] RoboPhisher -pk s3cr3tp4ssw0rd
 
       .. code-block:: bash
 
-        [sudo] wifiphisher --presharedkey s3cr3tp4ssw0rd
+        [sudo] RoboPhisher --presharedkey s3cr3tp4ssw0rd
 
 
 .. _logging:
@@ -138,7 +138,7 @@ Command Line Arguments
     .. hint::
         .. code-block:: bash
 
-            [sudo] wifiphisher --log-file
+            [sudo] RoboPhisher --log-file
 
     .. warning::
         This argument will only keep the three most recent logs. This means that after the fifth

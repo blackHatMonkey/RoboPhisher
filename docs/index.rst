@@ -1,9 +1,9 @@
-.. Wifiphisher documentation master file, created by
+.. RoboPhisher documentation master file, created by
    sphinx-quickstart on Wed Mar 15 18:38:21 2017.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Wifiphisher's documentation!
+Welcome to RoboPhisher's documentation!
 =======================================
 
 Table Of Contents

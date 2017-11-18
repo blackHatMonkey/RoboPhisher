@@ -2,7 +2,7 @@ Frequently Asked Questions
 ===========================
 
 -----------------------------------------------------------
-How to check wireless card compatibility with wifiphisher?
+How to check wireless card compatibility with RoboPhisher?
 -----------------------------------------------------------
 
 -------------------------------------------

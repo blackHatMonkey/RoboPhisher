@@ -3,10 +3,10 @@ Module Documentaion
 
 Interfaces Module
 ------------------
-.. automodule:: wifiphisher.common.interfaces
+.. automodule:: robophisher.common.interfaces
    :members:
 
 Firewall Module
 ----------------
-.. automodule:: wifiphisher.common.firewall
+.. automodule:: robophisher.common.firewall
    :members:
