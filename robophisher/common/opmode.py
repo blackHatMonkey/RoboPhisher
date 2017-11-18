@@ -235,11 +235,8 @@ def validate_ap_interface(interface):
     :rtype: None
     :raises: argparse.ArgumentTypeError in case of invalid interface
     """
-    if not(pyric.pyw.iswireless(interface) and \
-        pyric.pyw.isinterface(interface) and \
-        interfaces.does_have_mode(interface, "AP")):
-
-        raise argparse.ArgumentTypeError("Provided interface ({}) \
-                                        either does not exist or "
-                                         " does not support AP mode" \
-                                        .format(interface))
+    if not (pyric.pyw.iswireless(interface) and pyric.pyw.isinterface(interface)
+            and interfaces.does_have_mode(interface, "AP")):
+        message = ("Provided interface ({}) either does not exist or does not support AP mode".
+                   format(interface))
+        raise argparse.ArgumentTypeError(message)
