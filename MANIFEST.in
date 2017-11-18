@@ -1,2 +1,2 @@
-include LICENSE.txt README.md
-recursive-include wifiphisher/data *
+include LICENSE.txt README.rst
+recursive-include robophisher/data *

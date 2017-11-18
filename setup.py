@@ -16,6 +16,17 @@ with open('robophisher/__init__.py', 'r') as fd:
                         re.MULTILINE).group(1)
 
 
+def read_long_description():
+    """
+    Return the long description of the project
+    """
+    try:
+        with open('README.rst') as readme:
+            return readme.read()
+    except IOError:
+        return None
+
+
 class CleanCommand(Command):
     """Custom clean command to tidy up the project root."""
     user_options = []
@@ -178,6 +189,7 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     description=DESCRIPTION,
+    long_description=read_long_description(),
     license=LICENSE,
     keywords=KEYWORDS,
     packages=PACKAGES,
