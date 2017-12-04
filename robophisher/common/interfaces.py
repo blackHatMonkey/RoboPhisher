@@ -5,6 +5,7 @@ the program
 
 import random
 from collections import defaultdict
+import time
 import logging
 import pyric
 import pyric.pyw as pyw
@@ -954,3 +955,35 @@ def does_have_mode(interface, mode):
     card = pyric.pyw.getcard(interface)
 
     return mode in pyric.pyw.devmodes(card)
+
+
+def set_interface_channel(interface_name, channel):
+    """
+    Set the channel for the interface
+
+    :param interface_name: Name of an interface
+    :param channel: A channel number
+    :type interface_name: str
+    :type channel: int
+    :return: None
+    :rtype: None
+    """
+    card = pyric.pyw.getcard(interface_name)
+    pyric.pyw.chset(card, channel)
+
+
+def change_channel_periodically(interface_name, seconds):
+    """
+    Change the interface channel every seconds.
+
+    :param interface_name: Name of an interface
+    :param seconds: Number of seconds to change channel
+    :type interface_name: str
+    :type seconds: int
+    :return: None
+    :rtype None
+    """
+    while True:
+        for channel in range(1, 14):
+            set_interface_channel(interface_name, channel)
+            time.sleep(seconds)

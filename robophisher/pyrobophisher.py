@@ -14,6 +14,7 @@ import socket
 import struct
 import signal
 from threading import Thread
+import multiprocessing
 from subprocess import Popen, PIPE, check_output
 from shutil import copyfile
 from robophisher.common.constants import *
@@ -176,9 +177,111 @@ def kill_interfering_procs():
             # kill all the processes name equal to interfering_proc
             if interfering_proc in proc:
                 pid = int(proc.split(None, 1)[0])
-                print '[' + G + '+' + W + "] Sending SIGKILL to " +\
-                    interfering_proc
+                print('[' + G + '+' + W + "] Sending SIGKILL to " + interfering_proc)
                 os.kill(pid, signal.SIGKILL)
+
+
+def get_chosen_access_point(interface_name):
+    """
+    Return the chosen access point after displaying all the options to
+        the user
+
+    :param interface_name: Name of an interface for sniffing
+    :type interface_name: str
+    :return:
+    :rtype:
+    """
+    change_channel = multiprocessing.Process(
+        target=interfaces.change_channel_periodically, args=(interface_name, 1))
+    change_channel.start()
+
+    should_stop = lambda: raw_input()
+    should_stop_thread = Thread(target=should_stop)
+    should_stop_thread.start()
+
+    displayed_ap = list()
+    item_number = 1
+    table_format = u"{:^8} {:<20} {:^7} {:<17} {:^10}"
+
+    print(table_format.format("Number", "SSID", "Channel", "BSSID", "Encrypted?"))
+    print("-" * 63)
+
+    while should_stop_thread.is_alive():
+        new_ap = recon.get_new_ap(interface_name)
+
+        if new_ap not in displayed_ap:
+            encryption = u"\u2713" if new_ap.is_encrypted else " "
+            print(
+                table_format.format(item_number, new_ap.name[:20], new_ap.channel,
+                                    new_ap.mac_address, encryption))
+
+            displayed_ap.append(new_ap)
+            item_number += 1
+
+    change_channel.terminate()
+    change_channel.join()
+    should_stop_thread.join()
+
+    print("Please Enter The Number For Your Desired Target:"),
+    user_choice = get_integer_in_range(1, item_number - 1)
+
+    return displayed_ap[user_choice - 1]
+
+
+def get_integer():
+    """
+    Return an integer after asking the user
+
+    :return: An integer
+    :rtype: int
+    :Example:
+
+        >>> print("Enter Your Choice: ")
+        >>> choice = get_integer()
+        Enter Your Choice: haha
+        Please Enter An Integer: 2
+        >>> choice
+        2
+    """
+    user_input = None
+    while user_input is None:
+        try:
+            user_input = int(raw_input())
+        except ValueError:
+            print("Please Enter An Integer:"),
+
+    return user_input
+
+
+def get_integer_in_range(lower_bound, upper_bound):
+    """
+    Return an integer explicitly within the lower and upper bound
+        after asking the user
+
+    :param lower_bound: The lower bound of range
+    :param upper_bound: The upper bound of range
+    :type lower_bound: int
+    :type upper_bound: int
+    :return: An integer within the range
+    :rtype: int
+    :Example:
+
+        >>> print("Please Enter Your Choice: "
+        >>> choice = get_integer_in_range(1, 3)
+        Please Enter Your Choice: haha
+        Please Enter An Integer: 4
+        Please Enter An Integer Between 1 and 3: 2
+        >>> choice
+        2
+    """
+    while True:
+        user_input = get_integer()
+        if user_input < lower_bound or user_input > upper_bound:
+            print("Please Enter An Integer Between {} and {}:".format(lower_bound, upper_bound)),
+        else:
+            break
+
+    return user_input
 
 
 class WifiphisherEngine:
@@ -358,19 +461,17 @@ class WifiphisherEngine:
             # let user choose access point
             # start the monitor adapter
             self.network_manager.up_interface(mon_iface)
-            ap_info_object = tui.ApSelInfo(mon_iface, self.mac_matcher, self.network_manager, args)
-            ap_sel_object = tui.TuiApSel()
-            access_point = curses.wrapper(ap_sel_object.gather_info, ap_info_object)
-            # if the user has chosen a access point continue
-            # otherwise shutdown
-            if access_point:
-                # store choosen access point's information
-                essid = access_point.get_name()
-                channel = access_point.get_channel()
-                target_ap_mac = access_point.get_mac_address()
-                enctype = access_point.get_encryption()
-            else:
-                self.stop()
+            print("Press Enter to stop the access point search")
+            raw_input("Press Enter to continue")
+            print("")
+            chosen_access_point = get_chosen_access_point(mon_iface)
+
+            essid = chosen_access_point.name
+            channel = chosen_access_point.channel
+            target_ap_mac = chosen_access_point.mac_address
+            # Encrytpion could be anything but for now its always set to None
+            enctype = None
+
         # create a template manager object
         self.template_manager = phishingpage.TemplateManager()
         # get the correct template
@@ -385,8 +486,8 @@ class WifiphisherEngine:
             # copy payload to update directory
             while not payload_path or not os.path.isfile(payload_path):
                 # get payload path
-                payload_path = raw_input("[" + G + "+" + W + "] Enter the [" + G + "full path" + W
-                                         + "] to the payload you wish to serve: ")
+                payload_path = raw_input("[" + G + "+" + W + "] Enter the [" + G + "full path" +
+                                         W + "] to the payload you wish to serve: ")
                 if not os.path.isfile(payload_path):
                     print '[' + R + '-' + W + '] Invalid file path!'
             print '[' + T + '*' + W + '] Using ' + G + payload_path + W + ' as payload '

@@ -5,6 +5,7 @@ available access points
 
 from __future__ import division
 import threading
+import collections
 import time
 import logging
 import scapy.layers.dot11 as dot11
@@ -197,9 +198,9 @@ class AccessPointFinder(object):
                 if not packet.info or "\00" in packet.info:
                     if packet.addr3 not in self._hidden_networks:
                         self._hidden_networks.append(packet.addr3)
-                # otherwise get it's name and encryption
-                else:
-                    self._create_ap_with_info(packet)
+                        # otherwise get it's name and encryption
+                    else:
+                        self._create_ap_with_info(packet)
 
         # if packet is a probe response and it's hidden add the
         # access point
@@ -272,7 +273,7 @@ class AccessPointFinder(object):
                 # find the current and calculate the difference
                 current_signal_strength = access_point.get_signal_strength()
                 signal_strength_difference = new_signal_strength -\
-                    current_signal_strength
+                        current_signal_strength
 
                 # update signal strength if more than 5% difference
                 if signal_strength_difference > 5:
@@ -318,13 +319,13 @@ class AccessPointFinder(object):
             elif elt_section.ID == 221 and\
                     elt_section.info.startswith("\x00P\xf2\x01\x01\x00"):
                 encryption_type = "WPA"
-            # check if WPS IE exists
-            if elt_section.ID == 221 and\
-                    elt_section.info.startswith("\x00P\xf2\x04"):
-                is_wps = True
-            # break if wps and security is found
-            if encryption_type and is_wps:
-                break
+                # check if WPS IE exists
+                if elt_section.ID == 221 and\
+                   elt_section.info.startswith("\x00P\xf2\x04"):
+                    is_wps = True
+                    # break if wps and security is found
+                    if encryption_type and is_wps:
+                        break
 
             # break down the packet
             elt_section = elt_section.payload
@@ -357,7 +358,7 @@ class AccessPointFinder(object):
 
     def capture_aps(self):
         self._capture_file = constants.LOCS_DIR + "area_" +\
-            time.strftime("%Y%m%d_%H%M%S")
+                time.strftime("%Y%m%d_%H%M%S")
         logger.info("Create lure10-capture file %s", self._capture_file)
 
     def find_all_access_points(self):
@@ -474,7 +475,7 @@ class AccessPointFinder(object):
 
         # if a valid address is provided
         if (receiver_identifier, sender_identifier) not in\
-                self._non_client_addresses:
+           self._non_client_addresses:
 
             # if discovered access point is either sending or receving
             # add client if it's mac address is not in the MAC filter
@@ -489,8 +490,8 @@ class AccessPointFinder(object):
 
                 # in case access point is the sender add reciever
                 # as client
-                elif access_point_mac == sender:
-                    access_point.add_client(receiver)
+        elif access_point_mac == sender:
+            access_point.add_client(receiver)
 
     def get_sorted_access_points(self):
         """
@@ -508,3 +509,49 @@ class AccessPointFinder(object):
             self._observed_access_points, key=lambda ap: ap.get_signal_strength(), reverse=True)
 
         return sorted_access_points
+
+
+def is_packet_valid(packet):
+    """
+    Return whether the packet is valid using the following merits:
+        1. Is a Dot11Beacon frame
+        2. Is not malformed
+
+    :param packet: A scapy packet
+    :type packet: scapy.layers.RadioTap
+    :return: True if packet is valid and False otherwise
+    :rtype: bool
+    """
+    return (packet.haslayer(dot11.Dot11Beacon)
+            and hasattr(packet.payload, "info")
+            and packet.info
+            and not packet.info.startswith('\x00')
+            and len(packet[dot11.Dot11Elt:3].info) == 1)
+
+
+def get_new_ap(interface_name):
+    """
+    Return a tuple containing the information for an access point
+
+    :param interface_name: Name of an interface to sniff
+    :type interface_name: str
+    :return: AccessPoint tuple containing information
+    :rtype: AccessPoint(name, channel, mac_address, is_encrypted)
+    :Example:
+
+        >>> interface = "wlan0"
+        >>> get_new_ap()
+        AccessPoint("NEW AP", 2, 00:11:22:33:44:55, True)
+
+    .. Note: This function has the possibility of blocking if it can't
+        find a valid packet. However in practice this never happens.
+    """
+    access_point = collections.namedtuple("AccessPoint", "name channel mac_address is_encrypted")
+    packet = dot11.sniff(iface=interface_name, count=1, lfilter=is_packet_valid)[0]
+
+    name = packet.info
+    channel = ord(packet[dot11.Dot11Elt:3].info)
+    mac_address = packet.addr3
+    is_encrypted = "privacy" in packet.sprintf("{Dot11Beacon:%Dot11Beacon.cap%}")
+
+    return access_point(name, channel, mac_address, is_encrypted)
