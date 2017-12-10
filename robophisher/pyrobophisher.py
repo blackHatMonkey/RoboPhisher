@@ -21,6 +21,7 @@ from robophisher.common.constants import *
 import robophisher
 import robophisher.common.extensions as extensions
 import robophisher.common.recon as recon
+import robophisher.arguments as arguments
 import robophisher.common.phishingpage as phishingpage
 import robophisher.common.phishinghttp as phishinghttp
 import robophisher.common.macmatcher as macmatcher
@@ -49,7 +50,7 @@ def parse_args():
     parser.add_argument(
         "-aI",
         "--apinterface",
-        type=opmode.validate_ap_interface,
+        type=arguments.validate_ap_interface,
         help=("Manually choose an interface that supports AP mode for  " + "spawning an AP. " +
               "Example: -aI wlan0"))
     parser.add_argument(
