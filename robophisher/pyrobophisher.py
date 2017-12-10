@@ -45,6 +45,7 @@ def parse_args():
     parser.add_argument(
         "-jI",
         "--jamminginterface",
+        type=arguments.validate_monitor_interface,
         help=("Manually choose an interface that supports monitor mode for " +
               "deauthenticating the victims. " + "Example: -jI wlan1"))
     parser.add_argument(
