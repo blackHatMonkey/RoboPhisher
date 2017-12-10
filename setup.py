@@ -43,7 +43,7 @@ CLASSIFIERS = [
     "Intended Audience :: System Administrators", "Intended Audience :: Information Technology"
 ]
 ENTRY_POINTS = {"console_scripts": ["robophisher= robophisher.pyrobophisher:run"]}
-INSTALL_REQUIRES = ["PyRIC", "tornado", "dbus-python", "pbkdf2", "roguehostapd"]
+INSTALL_REQUIRES = ["PyRIC", "tornado", "pbkdf2", "roguehostapd"]
 
 # run setup
 setup(
