@@ -88,16 +88,6 @@ class OpMode(object):
                      '] --nojamming (-nJ) and --jamminginterface (-jI)'
                      'cannot work together.')
 
-        if args.lure10_exploit and args.nojamming:
-            sys.exit('[' + constants.R + '-' + constants.W +
-                     '] --lure10-exploit (-lE) and --nojamming (-nJ)'
-                     'cannot work together.')
-
-        if args.lure10_exploit and not os.path.isfile(constants.LOCS_DIR + args.lure10_exploit):
-            sys.exit('[' + constants.R + '-' + constants.W +
-                     '] Lure10 capture does not exist. Listing directory'
-                     'of captures: ' + str(os.listdir(constants.LOCS_DIR)))
-
         if (args.mac_ap_interface and args.no_mac_randomization) or \
                 (args.mac_deauth_interface and args.no_mac_randomization):
             sys.exit('[' + constants.R + '-' + constants.W +

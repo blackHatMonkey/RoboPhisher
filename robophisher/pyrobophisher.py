@@ -99,18 +99,6 @@ def parse_args():
               "credentials"),
         action='store_true')
     parser.add_argument(
-        "-lC",
-        "--lure10-capture",
-        help=("Capture the BSSIDs of the APs that are discovered during "
-              "AP selection phase. This option is part of Lure10 attack."),
-        action='store_true')
-    parser.add_argument(
-        "-lE",
-        "--lure10-exploit",
-        help=("Fool the Windows Location Service of nearby Windows users "
-              "to believe it is within an area that was previously captured "
-              "with --lure10-capture. Part of the Lure10 attack."))
-    parser.add_argument(
         "-iAM", "--mac-ap-interface", help=("Specify the MAC address of the AP interface"))
     parser.add_argument(
         "-iDM",
@@ -563,10 +551,6 @@ class WifiphisherEngine:
             self.network_manager.up_interface(mon_iface)
             self.em.set_interface(mon_iface)
             extensions = DEFAULT_EXTENSIONS
-            if args.lure10_exploit:
-                extensions.append(LURE10_EXTENSION)
-            if args.handshake_capture:
-                extensions.append(HANDSHAKE_VALIDATE_EXTENSION)
             self.em.set_extensions(extensions)
             self.em.init_extensions(shared_data)
             self.em.start_extensions()
