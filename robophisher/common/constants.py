@@ -12,7 +12,7 @@ dir_of_data = path_to_project_root + '/data/'
 DEV = 1
 LURE10_EXTENSION = "lure10"
 HANDSHAKE_VALIDATE_EXTENSION = "handshakeverify"
-DEFAULT_EXTENSIONS = ["deauth"]
+DEFAULT_EXTENSIONS = []
 EXTENSIONS_LOADPATH = "robophisher.extensions."
 PORT = 8080
 SSL_PORT = 443
@@ -123,7 +123,7 @@ LOGGING_CONFIG = {
 VALID_POST_CONTENT_TYPE = "application/x-www-form-urlencoded"
 
 # TUI
-MAIN_TUI_ATTRS = 'version essid channel ap_iface em phishinghttp args'
+MAIN_TUI_ATTRS = 'version essid channel ap_iface em phishinghttp args bssid mon_iface'
 AP_SEL_ATTRS = 'interface mac_matcher network_manager args'
 
 # Fourway handshake extension

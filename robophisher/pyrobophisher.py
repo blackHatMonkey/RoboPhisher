@@ -576,7 +576,7 @@ class WifiphisherEngine:
         # Main loop.
         try:
             main_info = tui.MainInfo(robophisher.__version__, essid, channel, ap_iface, self.em,
-                                     phishinghttp, args)
+                                     phishinghttp, args, target_ap_mac, mon_iface)
             tui_main_object = tui.TuiMain()
             curses.wrapper(tui_main_object.gather_info, main_info)
             self.stop()
