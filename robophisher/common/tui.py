@@ -565,7 +565,7 @@ class TuiMain(object):
         except curses.error:
             pass
 
-        new_client = deauth.find_client(info.bssid, self.socket0)
+        '''new_client = deauth.find_client(info.bssid, self.socket0)
         if new_client and new_client not in self.clients:
             LOGGER.info("Found New Client: {}".format(new_client))
             LOGGER.info("Deatuthenticating New Client: {}".format(new_client))
@@ -573,6 +573,7 @@ class TuiMain(object):
             self.packets.append(deauth.craft_packets(new_client, info.target_ap_mac))
 
         map(self.socket1.send, self.packets)
+        '''
 
         # start raw number from 2
         raw_num = 2
