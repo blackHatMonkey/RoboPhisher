@@ -22,7 +22,6 @@ import robophisher
 import robophisher.common.extensions as extensions
 import robophisher.common.recon as recon
 import robophisher.arguments as arguments
-import robophisher.common.phishingpage as phishingpage
 import robophisher.common.phishinghttp as phishinghttp
 import robophisher.common.macmatcher as macmatcher
 import robophisher.common.interfaces as interfaces
@@ -274,11 +273,31 @@ def get_integer_in_range(lower_bound, upper_bound):
     return user_input
 
 
+def get_chosen_template():
+    """
+    Display all the templates and get the user's choice
+
+    :return: The name of the template followed by its' path
+    :rtype: tuple(template_name, template_path)
+    """
+    firmware_upgrade = ("Firmware Upgrade", PHISHING_PAGES_DIR + "firmware-upgrade/")
+    oauth_login = ("Oauth Login", PHISHING_PAGES_DIR + "oauth-login/")
+    wifi_connect = ("Wifi Connect", PHISHING_PAGES_DIR + "wifi_connect/")
+    templates = [firmware_upgrade, oauth_login, wifi_connect]
+
+    raw_input("Press Enter To Start Template Selection\n")
+    for num in range(len(templates)):
+        print("{}-{}".format(num + 1, templates[num][0]))
+
+    print("\nPlease Enter The Number For Your Desired Template: "),
+    index = get_integer_in_range(1, len(templates))
+    return templates[index - 1]
+
+
 class WifiphisherEngine:
     def __init__(self):
         self.mac_matcher = macmatcher.MACMatcher(MAC_PREFIX_FILE)
         self.network_manager = interfaces.NetworkManager()
-        self.template_manager = phishingpage.TemplateManager()
         self.access_point = accesspoint.AccessPoint()
         self.em = extensions.ExtensionManager(self.network_manager)
         self.opmode = opmode.OpMode()
@@ -300,7 +319,6 @@ class WifiphisherEngine:
         # network manager
         self.access_point.on_exit()
         self.network_manager.on_exit()
-        self.template_manager.on_exit()
 
         clear_rules_result = firewall.clear_rules()
         if not clear_rules_result.status:
@@ -462,58 +480,10 @@ class WifiphisherEngine:
             # Encrytpion could be anything but for now its always set to None
             enctype = None
 
-        # create a template manager object
-        self.template_manager = phishingpage.TemplateManager()
         # get the correct template
-        tui_template_obj = tui.TuiTemplateSelection()
-        template = tui_template_obj.gather_info(args.phishingscenario, self.template_manager)
-        logger.info("Selecting {} template".format(template.get_display_name()))
-        print("[" + G + "+" + W + "] Selecting " + template.get_display_name() + " template")
-
-        # payload selection for browser plugin update
-        if template.has_payload():
-            payload_path = args.payload_path
-            # copy payload to update directory
-            while not payload_path or not os.path.isfile(payload_path):
-                # get payload path
-                payload_path = raw_input("[" + G + "+" + W + "] Enter the [" + G + "full path" +
-                                         W + "] to the payload you wish to serve: ")
-                if not os.path.isfile(payload_path):
-                    print '[' + R + '-' + W + '] Invalid file path!'
-            print '[' + T + '*' + W + '] Using ' + G + payload_path + W + ' as payload '
-            template.update_payload_path(os.path.basename(payload_path))
-            copyfile(payload_path, PHISHING_PAGES_DIR + template.get_payload_path())
-
-        APs_context = []
-        for i in APs:
-            APs_context.append({
-                'channel': APs[i][0] or "",
-                'essid': APs[i][1] or "",
-                'bssid': APs[i][2] or "",
-                'vendor': self.mac_matcher.get_vendor_name(APs[i][2]) or ""
-            })
-
-        template.merge_context({'APs': APs_context})
-
-        # only get logo path if MAC address is present
-        ap_logo_path = False
-        if target_ap_mac is not None:
-            ap_logo_path = template.use_file(self.mac_matcher.get_vendor_logo_path(target_ap_mac))
-
-        template.merge_context({
-            'target_ap_channel':
-            channel or "",
-            'target_ap_essid':
-            essid or "",
-            'target_ap_bssid':
-            target_ap_mac or "",
-            'target_ap_encryption':
-            enctype or "",
-            'target_ap_vendor':
-            self.mac_matcher.get_vendor_name(target_ap_mac) or "",
-            'target_ap_logo_path':
-            ap_logo_path or ""
-        })
+        template = get_chosen_template()
+        logger.info("Selecting {} template".format(template[0]))
+        print("Selecting {} template".format(template[0]))
 
         # We want to set this now for hostapd. Maybe the interface was in "monitor"
         # mode for network discovery before (e.g. when --nojamming is enabled).
@@ -542,9 +512,7 @@ class WifiphisherEngine:
                 'target_ap_essid': essid or "",
                 'target_ap_bssid': target_ap_mac or "",
                 'target_ap_encryption': enctype or "",
-                'target_ap_logo_path': ap_logo_path or "",
                 'rogue_ap_mac': rogue_ap_mac,
-                'APs': APs_context,
                 'args': args
             }
 
@@ -561,7 +529,7 @@ class WifiphisherEngine:
                 PORT) + ", " + str(SSL_PORT)
             webserver = Thread(
                 target=phishinghttp.runHTTPServer,
-                args=(NETWORK_GW_IP, PORT, SSL_PORT, template, self.em))
+                args=(NETWORK_GW_IP, PORT, SSL_PORT, template[1], self.em))
             webserver.daemon = True
             webserver.start()
 

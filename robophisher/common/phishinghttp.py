@@ -78,7 +78,7 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
         """
 
         requested_file = self.request.path[1:]
-        template_directory = template.get_path()
+        template_directory = template
 
         # choose the correct file to serve
         if os.path.isfile(template_directory + requested_file):
@@ -86,9 +86,19 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
         else:
             render_file = "index.html"
 
+        context = {
+            'target_ap_channel': "",
+            'target_ap_essid': "",
+            'target_ap_bssid': "",
+            'target_ap_encryption': "",
+            'target_ap_vendor': "",
+            'target_ap_logo_path': "",
+            "firmware_version": "1.0.12",
+            "organization": ""
+        }
         # load the file
         file_path = template_directory + render_file
-        self.render(file_path, **template.get_context())
+        self.render(file_path, **context)
 
         log_file_path = "/tmp/robophisher-webserver.tmp"
         with open(log_file_path, "a+") as log_file:
@@ -132,17 +142,26 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
             terminate = True
 
         requested_file = self.request.path[1:]
-        template_directory = template.get_path()
+        template_directory = template
 
         # choose the correct file to serve
         if os.path.isfile(template_directory + requested_file):
             render_file = requested_file
         else:
             render_file = "index.html"
-
+        context = {
+            'target_ap_channel': "",
+            'target_ap_essid': "",
+            'target_ap_bssid': "",
+            'target_ap_encryption': "",
+            'target_ap_vendor': "",
+            'target_ap_logo_path': "",
+            "firmware_version": "1.0.12",
+            "organization": ""
+        }
         # load the file
         file_path = template_directory + render_file
-        self.render(file_path, **template.get_context())
+        self.render(file_path, **context)
 
 
 def runHTTPServer(ip, port, ssl_port, t, em):
@@ -160,8 +179,8 @@ def runHTTPServer(ip, port, ssl_port, t, em):
             }),
             (r"/.*", CaptivePortalHandler),
         ],
-        template_path=template.get_path(),
-        static_path=template.get_path_static(),
+        template_path=template,
+        static_path=template + "static/",
         compiled_template_cache=False,
         ui_methods=uimethods)
     app.listen(port, address=ip)
