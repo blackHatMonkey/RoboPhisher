@@ -289,14 +289,10 @@ class WifiphisherEngine:
         self.opmode = opmode.OpMode()
 
     def stop(self):
-        if DEV:
-            print "[" + G + "+" + W + "] Show your support!"
-            print "[" + G + "+" + W + "] Follow us: https://twitter.com/robophisher"
-            print "[" + G + "+" + W + "] Like us: https://www.facebook.com/Wifiphisher"
-        print "[" + G + "+" + W + "] Captured credentials:"
+        print("[" + G + "+" + W + "] Captured credentials:")
         for cred in phishinghttp.creds:
             logger.info("Creds: %s", cred)
-            print cred
+            print(cred)
 
         # EM depends on Network Manager.
         # It has to shutdown first.
