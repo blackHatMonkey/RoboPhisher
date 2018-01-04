@@ -88,11 +88,6 @@ def parse_args():
         help=(
             "Add WPA/WPA2 protection on the rogue Access Point. " + "Example: -pK s3cr3tp4ssw0rd"))
     parser.add_argument(
-        "-hC",
-        "--handshake-capture",
-        help=("Capture of the WPA/WPA2 handshakes for verifying passphrase" +
-              "Example : -hC capture.pcap"))
-    parser.add_argument(
         "-qS",
         "--quitonsuccess",
         help=("Stop the script after successfully retrieving one pair of "
@@ -121,7 +116,6 @@ def parse_args():
 
 
 args = parse_args()
-APs = {}  # for listing APs
 
 
 def setup_logging(args):
@@ -318,7 +312,7 @@ class WifiphisherEngine:
     def start(self):
 
         # Parse args
-        global args, APs
+        global args
         args = parse_args()
 
         # setup the logging configuration
