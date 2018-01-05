@@ -17,9 +17,9 @@ from threading import Thread
 import multiprocessing
 from subprocess import Popen, PIPE, check_output
 from shutil import copyfile
+import scapy.arch.linux as linux
 from robophisher.common.constants import *
 import robophisher
-import robophisher.common.extensions as extensions
 import robophisher.common.recon as recon
 import robophisher.arguments as arguments
 import robophisher.common.phishinghttp as phishinghttp
@@ -29,9 +29,9 @@ import robophisher.common.firewall as firewall
 import robophisher.common.accesspoint as accesspoint
 import robophisher.common.opmode as opmode
 import robophisher.helper as helper
+import robophisher.deauth as deauth
 
 logger = logging.getLogger(__name__)
-CONTINEU = True
 
 # Fixes UnicodeDecodeError for ESSIDs
 reload(sys)
@@ -256,30 +256,11 @@ def display_connected_clients():
         print("{}({}) is now connected".format(mac_address, name))
 
 
-def display_deauth_clients(extension_manager):
-    """
-    Display all the clients that are getting deauthenticated
-
-    :return: None
-    :rtype: None
-    .. note: This function must be called in another process because
-        it uses an infinite loop.
-    """
-    alredy_display = set()
-    while CONTINEU:
-        for client in extension_manager.get_output():
-            if client not in alredy_display:
-                alredy_display.add(client)
-                print(client)
-        time.sleep(0.2)
-
-
 class WifiphisherEngine:
     def __init__(self):
         self.mac_matcher = macmatcher.MACMatcher(MAC_PREFIX_FILE)
         self.network_manager = interfaces.NetworkManager()
         self.access_point = accesspoint.AccessPoint()
-        self.em = extensions.ExtensionManager(self.network_manager)
         self.opmode = opmode.OpMode()
 
     def stop(self):
@@ -288,9 +269,6 @@ class WifiphisherEngine:
             logger.info("Creds: %s", cred)
             print(cred)
 
-        # EM depends on Network Manager.
-        # It has to shutdown first.
-        self.em.on_exit()
         # move the access_points.on_exit before the exit for
         # network manager
         self.access_point.on_exit()
@@ -493,11 +471,6 @@ class WifiphisherEngine:
             }
 
             self.network_manager.up_interface(mon_iface)
-            self.em.set_interface(mon_iface)
-            extensions = DEFAULT_EXTENSIONS
-            self.em.set_extensions(extensions)
-            self.em.init_extensions(shared_data)
-            self.em.start_extensions()
         # With configured DHCP, we may now start the web server
         if not self.opmode.internet_sharing_enabled():
             # Start HTTP server in a background thread
@@ -505,7 +478,7 @@ class WifiphisherEngine:
                 PORT) + ", " + str(SSL_PORT)
             webserver = Thread(
                 target=phishinghttp.runHTTPServer,
-                args=(NETWORK_GW_IP, PORT, SSL_PORT, template[1], self.em))
+                args=(NETWORK_GW_IP, PORT, SSL_PORT, template[1]))
             webserver.daemon = True
             webserver.start()
 
@@ -515,19 +488,19 @@ class WifiphisherEngine:
         self.mac_matcher.unbind()
 
         display_clients = multiprocessing.Process(target=display_connected_clients)
-        display_deauth = Thread(target=display_deauth_clients, args=(self.em,))
+        deauth_client = multiprocessing.Process(
+            target=deauth.deauth_clients, args=(mon_iface, target_ap_mac))
 
         print("Displaying Live Attack\n")
         display_clients.start()
-        display_deauth.start()
+        deauth_client.start()
 
         helper.wait_on_input()
 
         display_clients.terminate()
         display_clients.join()
-        global CONTINEU
-        CONTINEU = False
-        display_deauth.join()
+        deauth_client.terminate()
+        deauth_client.join()
 
         self.stop()
 

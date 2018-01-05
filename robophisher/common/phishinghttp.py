@@ -24,48 +24,6 @@ class DowngradeToHTTP(tornado.web.RequestHandler):
         self.redirect("http://10.0.0.1:8080/")
 
 
-class BackendHandler(tornado.web.RequestHandler):
-    """
-    Validate the POST requests from client by the uimethods
-    """
-
-    def initialize(self, em):
-        """
-        :param self: A tornado.web.RequestHandler object
-        :param em: An extension manager object
-        :type self: tornado.web.RequestHandler
-        :type em: ExtensionManager
-        :return: None
-        :rtype: None
-        """
-
-        self.em = em
-
-    def post(self):
-        """
-        :param self: A tornado.web.RequestHandler object
-        :type self: tornado.web.RequestHandler
-        :return: None
-        :rtype: None
-        ..note: override the post method to do the verification
-        """
-
-        json_obj = json_decode(self.request.body)
-        response_to_send = {}
-        backend_methods = self.em.get_backend_funcs()
-        # loop all the required verification methods
-        for func_name in list(json_obj.keys()):
-            if func_name in backend_methods:
-                # get the corresponding callback
-                callback = getattr(backend_methods[func_name], func_name)
-                # fire the corresponding varification method
-                response_to_send[func_name] = callback(json_obj[func_name])
-            else:
-                response_to_send[func_name] = "NotFound"
-
-        self.write(json.dumps(response_to_send))
-
-
 class CaptivePortalHandler(tornado.web.RequestHandler):
     def get(self):
         """
@@ -158,25 +116,17 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
         self.render(file_path, **context)
 
 
-def runHTTPServer(ip, port, ssl_port, t, em):
+def runHTTPServer(ip, port, ssl_port, t):
     global template
     template = t
 
-    # Get all the UI funcs and set them to uimethods module
-    for f in em.get_ui_funcs():
-        setattr(uimethods, f.__name__, f)
-
     app = tornado.web.Application(
         [
-            (r"/backend/.*", BackendHandler, {
-                "em": em
-            }),
             (r"/.*", CaptivePortalHandler),
         ],
         template_path=template,
         static_path=template + "static/",
-        compiled_template_cache=False,
-        ui_methods=uimethods)
+        compiled_template_cache=False)
     app.listen(port, address=ip)
 
     ssl_app = tornado.web.Application([(r"/.*", DowngradeToHTTP)])

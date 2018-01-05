@@ -69,13 +69,6 @@ class OpMode(object):
                      '] Pre-shared key must be between 8 and 63 printable'
                      'characters.')
 
-        if args.handshake_capture and not os.path.isfile(args.handshake_capture):
-            sys.exit('[' + constants.R + '-' + constants.W + '] handshake capture does not exist.')
-        elif args.handshake_capture and not handshakeverify.\
-                is_valid_handshake_capture(args.handshake_capture):
-            sys.exit('[' + constants.R + '-' + constants.W +
-                     '] handshake capture does not contain valid handshake')
-
         if ((args.jamminginterface and not args.apinterface) or
                 (not args.jamminginterface and args.apinterface)) and \
                 not (args.nojamming and args.apinterface):
