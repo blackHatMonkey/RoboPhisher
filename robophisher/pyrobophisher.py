@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 # pylint: skip-file
+from __future__ import print_function
 import subprocess
 import os
 import logging
@@ -161,7 +162,7 @@ def kill_interfering_procs():
             # kill all the processes name equal to interfering_proc
             if interfering_proc in proc:
                 pid = int(proc.split(None, 1)[0])
-                print('[' + G + '+' + W + "] Sending SIGKILL to " + interfering_proc)
+                print("Sending SIGKILL to {}".format(interfering_proc))
                 os.kill(pid, signal.SIGKILL)
 
 
@@ -205,7 +206,7 @@ def get_chosen_access_point(interface_name):
     change_channel.join()
     should_stop_thread.join()
 
-    print("Please Enter The Number For Your Desired Target:"),
+    print("Please Enter The Number For Your Desired Target:", end="")
     user_choice = helper.get_integer_in_range(1, item_number - 1)
 
     return displayed_ap[user_choice - 1]
@@ -227,7 +228,7 @@ def get_chosen_template():
     for num in range(len(templates)):
         print("{}-{}".format(num + 1, templates[num][0]))
 
-    print("\nPlease Enter The Number For Your Desired Template: "),
+    print("\nPlease Enter The Number For Your Desired Template: ", end="")
     index = helper.get_integer_in_range(1, len(templates))
     return templates[index - 1]
 
@@ -264,7 +265,7 @@ class WifiphisherEngine:
         self.opmode = opmode.OpMode()
 
     def stop(self):
-        print("[" + G + "+" + W + "] Captured credentials:")
+        print("Captured credentials:")
         for cred in phishinghttp.creds:
             logger.info("Creds: %s", cred)
             print(cred)
@@ -284,7 +285,7 @@ class WifiphisherEngine:
         if os.path.isfile('/tmp/robophisher-webserver.tmp'):
             os.remove('/tmp/robophisher-webserver.tmp')
 
-        print '[' + R + '!' + W + '] Closing'
+        print("Closing")
         sys.exit(0)
 
     def start(self):
@@ -304,7 +305,7 @@ class WifiphisherEngine:
         # Are you root?
         if os.geteuid():
             logger.error("Non root user detected")
-            sys.exit('[' + R + '-' + W + '] Please run as root')
+            sys.exit("Please run as root")
 
         self.network_manager.start()
 
@@ -335,9 +336,8 @@ class WifiphisherEngine:
                 # display selected interfaces to the user
                 logger.info("Selecting {} for deauthentication and {} for rouge access point"
                             .format(mon_iface, ap_iface))
-                print("[{0}+{1}] Selecting {0}{2}{1} interface for the deauthentication "
-                      "attack\n[{0}+{1}] Selecting {0}{3}{1} interface for creating the "
-                      "rogue Access Point").format(G, W, mon_iface, ap_iface)
+                print("Selecting {} for deauthentication and {} for rouge access point".format(
+                    mon_iface, ap_iface))
 
                 # randomize the mac addresses
                 if not args.no_mac_randomization:
@@ -364,8 +364,8 @@ class WifiphisherEngine:
                     else:
                         self.network_manager.set_interface_mac_random(ap_iface)
 
-                print("[{0}+{1}] Selecting {0}{2}{1} interface for creating the "
-                      "rogue Access Point").format(G, W, ap_iface)
+                print(
+                    "Selecting {} interface for creating the rogue Access Point".format(ap_iface))
                 logger.info("Selecting {} interface for rouge access point".format(ap_iface))
                 # randomize the mac addresses
                 if not args.no_mac_randomization:
@@ -381,7 +381,7 @@ class WifiphisherEngine:
         except (interfaces.InvalidInterfaceError, interfaces.InterfaceCantBeFoundError,
                 interfaces.InterfaceManagedByNetworkManagerError) as err:
             logger.exception("The following error has occurred:")
-            print("[{0}!{1}] {2}").format(R, W, err)
+            print(err)
 
             time.sleep(1)
             self.stop()
@@ -393,13 +393,12 @@ class WifiphisherEngine:
         rogue_ap_mac = self.network_manager.get_interface_mac(ap_iface)
         if not args.no_mac_randomization:
             logger.info("Changing {} MAC address to {}".format(ap_iface, rogue_ap_mac))
-            print "[{0}+{1}] Changing {2} MAC addr (BSSID) to {3}".format(
-                G, W, ap_iface, rogue_ap_mac)
+            print("Changing {} MAC addr (BSSID) to {}".format(ap_iface, rogue_ap_mac))
 
             if self.opmode.advanced_enabled():
                 mon_mac = self.network_manager.get_interface_mac(mon_iface)
                 logger.info("Changing {} MAC address to {}".format(mon_iface, mon_mac))
-                print("[{0}+{1}] Changing {2} MAC addr to {3}".format(G, W, mon_iface, mon_mac))
+                print("Changing {} MAC addr to {}".format(mon_iface, mon_mac))
 
         redirect_localhost_result = firewall.redirect_to_localhost()
         if not redirect_localhost_result.status:
@@ -409,7 +408,7 @@ class WifiphisherEngine:
             logger.error(message)
             self.stop()
 
-        print '[' + T + '*' + W + '] Cleared leases, started DHCP, set up iptables'
+        print("Cleared leases, started DHCP, set up iptables")
         time.sleep(1)
 
         if args.essid:
@@ -451,7 +450,7 @@ class WifiphisherEngine:
             self.access_point.set_psk(args.presharedkey)
         if self.opmode.internet_sharing_enabled():
             self.access_point.set_internet_interface(args.internetinterface)
-        print '[' + T + '*' + W + '] Starting the fake access point...'
+        print("Starting the fake access point...")
         try:
             self.access_point.start()
             self.access_point.start_dhcp_dns()
@@ -474,8 +473,7 @@ class WifiphisherEngine:
         # With configured DHCP, we may now start the web server
         if not self.opmode.internet_sharing_enabled():
             # Start HTTP server in a background thread
-            print '[' + T + '*' + W + '] Starting HTTP/HTTPS server at ports ' + str(
-                PORT) + ", " + str(SSL_PORT)
+            print("Starting HTTP/HTTPS server at ports {}, {}".format(PORT, SSL_PORT))
             webserver = Thread(
                 target=phishinghttp.runHTTPServer,
                 args=(NETWORK_GW_IP, PORT, SSL_PORT, template[1]))
@@ -507,11 +505,11 @@ class WifiphisherEngine:
 
 def run():
     try:
-        print('[' + T + '*' + W + '] Starting RoboPhisher %s at %s' %
-              (robophisher.__version__, time.strftime("%Y-%m-%d %H:%M")))
+        print("Starting RoboPhisher {} at {}".format(robophisher.__version__,
+                                                     time.strftime("%Y-%m-%d %H:%M")))
         engine = WifiphisherEngine()
         engine.start()
     except KeyboardInterrupt:
-        print R + '\n (^C)' + O + ' interrupted\n' + W
+        print("\n (^C) interrupted\n")
     except EOFError:
-        print R + '\n (^D)' + O + ' interrupted\n' + W
+        print("\n (^D) interrupted\n")
