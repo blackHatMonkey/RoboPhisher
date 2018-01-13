@@ -1,7 +1,7 @@
 """
 This module handles all the routing and firewall related tasks
 """
-import robophisher.common.constants as constants
+import robophisher.constants as constants
 import robophisher.helper as helper
 
 

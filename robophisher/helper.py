@@ -3,7 +3,7 @@ This module hosts the helper commands used by other modules
 """
 from __future__ import print_function
 import subprocess
-import robophisher.common.constants as constants
+import robophisher.constants as constants
 
 
 def run_command(command):

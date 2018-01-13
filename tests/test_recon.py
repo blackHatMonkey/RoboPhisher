@@ -1,7 +1,7 @@
 import mock
 import collections
 import scapy.layers.dot11 as dot11
-import robophisher.common.recon as recon
+import robophisher.recon as recon
 
 
 def test_is_packet_valid_packet_not_beacon():
@@ -38,7 +38,7 @@ def test_is_packet_valid_packet_valid():
     assert recon.is_packet_valid(packet) == True
 
 
-@mock.patch("robophisher.common.recon.dot11.sniff")
+@mock.patch("robophisher.recon.dot11.sniff")
 def test_get_new_ap_valid_packet(sniff):
     """
     Test get_new_ap function with a valid(standard) packet
@@ -55,7 +55,7 @@ def test_get_new_ap_valid_packet(sniff):
     assert recon.get_new_ap("wlan0") == (name, channel, address, True)
 
 
-@mock.patch("robophisher.common.recon.dot11.sniff")
+@mock.patch("robophisher.recon.dot11.sniff")
 def test_get_new_ap_packet_no_encryption(sniff):
     """
     Test get_new_ap function with a packet where AP is not encrypted

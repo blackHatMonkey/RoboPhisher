@@ -5,7 +5,7 @@ available access points
 
 import collections
 import scapy.layers.dot11 as dot11
-import robophisher.common.constants as constants
+import robophisher.constants as constants
 
 
 def is_packet_valid(packet):

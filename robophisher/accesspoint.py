@@ -6,7 +6,7 @@ import time
 import subprocess
 from roguehostapd import hostapd_controller
 from roguehostapd import hostapd_constants
-import robophisher.common.constants as constants
+import robophisher.constants as constants
 
 
 class AccessPoint(object):

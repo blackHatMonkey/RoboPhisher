@@ -3,7 +3,7 @@ This module is responsible for handling all the validation for the
 arguments the user provides in command line
 """
 import argparse
-import robophisher.common.interfaces as interfaces
+import robophisher.interfaces as interfaces
 import pyric.pyw
 
 

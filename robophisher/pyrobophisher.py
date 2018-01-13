@@ -14,15 +14,15 @@ import threading
 import multiprocessing
 import select
 from subprocess import Popen
-from robophisher.common.constants import *
-import robophisher.common.recon as recon
+from robophisher.constants import *
+import robophisher.recon as recon
 import robophisher.arguments as arguments
-import robophisher.common.phishinghttp as phishinghttp
-import robophisher.common.macmatcher as macmatcher
-import robophisher.common.interfaces as interfaces
-import robophisher.common.firewall as firewall
-import robophisher.common.accesspoint as accesspoint
-import robophisher.common.opmode as opmode
+import robophisher.phishinghttp as phishinghttp
+import robophisher.macmatcher as macmatcher
+import robophisher.interfaces as interfaces
+import robophisher.firewall as firewall
+import robophisher.accesspoint as accesspoint
+import robophisher.opmode as opmode
 import robophisher.helper as helper
 import robophisher.deauth as deauth
 

@@ -9,7 +9,7 @@ import time
 import logging
 import pyric
 import pyric.pyw as pyw
-import robophisher.common.constants as constants
+import robophisher.constants as constants
 
 logger = logging.getLogger("robophisher.interfaces")
 
