@@ -11,7 +11,6 @@ import argparse
 import pyric
 import robophisher.common.interfaces as interfaces
 import robophisher.common.constants as constants
-import robophisher.extensions.handshakeverify as handshakeverify
 
 logger = logging.getLogger(__name__)
 

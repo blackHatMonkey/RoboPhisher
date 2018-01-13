@@ -135,19 +135,18 @@ def is_packet_relevant(packet, mac_address):
     return packet.type == 2 and packet.addr3 == mac_address
 
 
-def deauth_clients(interface, mac_address):
+def deauth_clients(interface, mac_address, stop_flag):
     """
     Deauthenticate any client related to mac_address
 
     :param interface: Name of an interface
     :param mac_address: MAC address of the target AP
+    :param stop_flag: An stop_flag object
     :type interface: str
     :type mac_address: str
+    :type stop_flag: threading.Event
     :return: None
     :rtype: None
-    .. note::
-        This function run infinitely and therefore should only be run
-        in a separate process where it can be stopped.
     """
     clients = set()
     packets = list()
@@ -155,7 +154,7 @@ def deauth_clients(interface, mac_address):
 
     packets += craft_broadcast_packets(mac_address)
 
-    while True:
+    while not stop_flag.is_set():
         new_client = find_client(mac_address, socket)
         if new_client and new_client not in clients:
             LOGGER.info("Found new client: {}".format(new_client))

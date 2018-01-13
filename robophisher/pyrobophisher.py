@@ -10,8 +10,9 @@ import time
 import sys
 import argparse
 import signal
-from threading import Thread
+import threading
 import multiprocessing
+import select
 from subprocess import Popen
 from robophisher.common.constants import *
 import robophisher.common.recon as recon
@@ -169,7 +170,7 @@ def get_chosen_access_point(interface_name):
         target=interfaces.change_channel_periodically, args=(interface_name, 1))
     change_channel.start()
 
-    should_stop_thread = Thread(target=helper.wait_on_input)
+    should_stop_thread = threading.Thread(target=helper.wait_on_input)
     should_stop_thread.start()
 
     displayed_ap = list()
@@ -222,14 +223,14 @@ def get_chosen_template():
     return templates[index - 1]
 
 
-def display_connected_clients():
+def display_connected_clients(stop_flag):
     """
     Display all the clients that connect to our acess point
 
+    :param stop_flag: An stop_flag object
+    :type stop_flag: threading.Event
     :return: None
     :rtype: None
-    .. note: This function must be called in another process because
-        it uses an infinite loop.
     """
     mac_address_field = 1
     name_field = 3
@@ -239,11 +240,18 @@ def display_connected_clients():
             ["tail", "-F", "/var/lib/misc/dnsmasq.leases"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
+        poll = select.poll()
+        poll.register(tail_command.stdout)
 
-    while True:
-        line = tail_command.stdout.readline()
-        mac_address, name = helper.get_fields_from_string(line, mac_address_field, name_field)
-        print("{}({}) is now connected".format(mac_address, name))
+    while not stop_flag.is_set():
+        if poll.poll(1):
+            line = tail_command.stdout.readline()
+            mac_address, name = helper.get_fields_from_string(line, mac_address_field, name_field)
+            print("{}({}) is now connected".format(mac_address, name))
+
+        time.sleep(1)
+
+    tail_command.kill()
 
 
 class WifiphisherEngine:
@@ -449,7 +457,7 @@ class WifiphisherEngine:
         if not self.opmode.internet_sharing_enabled():
             # Start HTTP server in a background thread
             print("Starting HTTP/HTTPS server at ports {}, {}".format(PORT, SSL_PORT))
-            webserver = Thread(
+            webserver = threading.Thread(
                 target=phishinghttp.runHTTPServer,
                 args=(NETWORK_GW_IP, PORT, SSL_PORT, template[1]))
             webserver.daemon = True
@@ -460,9 +468,10 @@ class WifiphisherEngine:
         # We no longer need mac_matcher
         self.mac_matcher.unbind()
 
-        display_clients = multiprocessing.Process(target=display_connected_clients)
-        deauth_client = multiprocessing.Process(
-            target=deauth.deauth_clients, args=(mon_iface, target_ap_mac))
+        stop_flag = threading.Event()
+        display_clients = threading.Thread(target=display_connected_clients, args=(stop_flag, ))
+        deauth_client = threading.Thread(
+            target=deauth.deauth_clients, args=(mon_iface, target_ap_mac, stop_flag))
 
         print("Displaying Live Attack\n")
         display_clients.start()
@@ -470,9 +479,8 @@ class WifiphisherEngine:
 
         helper.wait_on_input()
 
-        display_clients.terminate()
+        stop_flag.set()
         display_clients.join()
-        deauth_client.terminate()
         deauth_client.join()
 
         self.stop()
