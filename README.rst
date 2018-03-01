@@ -10,6 +10,7 @@
 
 RoboPhisher 
 ===========
+**RoboPhisher is no longer maintained. Users should move to Wifiphisher project.**
 
 What is it?
 -----------
