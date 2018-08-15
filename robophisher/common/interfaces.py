@@ -144,201 +144,34 @@ class InterfaceManagedByNetworkManagerError(Exception):
 
 
 class NetworkAdapter(object):
-    """ This class represents a network interface """
+    """Represent a network interface."""
 
     def __init__(self, name, card_obj, mac_address):
-        """
-        Setup the class with all the given arguments
-
-        :param self: A NetworkAdapter object
-        :param name: Name of the interface
-        :param card_obj: A pyric.pyw.Card object
-        :param mac_address: The MAC address of interface
-        :type self: NetworkAdapter
-        :type name: str
-        :type card_obj: pyric.pyw.Card
-        :type mac_address: str
-        :return: None
-        :rtype: None
-        """
-
-        # Setup the fields
-        self._name = name
-        self._has_ap_mode = False
-        self._has_monitor_mode = False
-        self._is_managed_by_nm = False
-        self._card = card_obj
-        self._original_mac_address = mac_address
+        # type: (str, pyw.Card, str) -> None
+        """Initialize the class."""
+        self.name = name
+        self.has_ap_mode = False
+        self.has_monitor_mode = False
+        self.is_managed_by_nm = False
+        self.card = card_obj
+        self.original_mac_address = mac_address
         self._current_mac_address = mac_address
 
     @property
-    def name(self):
-        """
-        Return the name of the interface
-
-        :param self: A NetworkAdapter object
-        :type self: NetworkAdapter
-        :return: The name of the interface
-        :rtype: str
-        """
-
-        return self._name
-
-    @property
-    def is_managed_by_nm(self):
-        """
-        Return whether the interface controlled by NetworkManager
-
-        :param self: A NetworkAdapter object
-        :type self: NetworkAdapter
-        :return: True if interface is controlled by NetworkManager
-        :rtype: bool
-        """
-        return self._is_managed_by_nm
-
-    @is_managed_by_nm.setter
-    def is_managed_by_nm(self, value):
-        """
-        Set whether the interface is controlled by NetworkManager
-
-        :param self: A NetworkAdapter object
-        :param value: A value representing interface controlled by NetworkManager
-        :type self: NetworkAdapter
-        :type value: bool
-        :return: None
-        :rtype: None
-        :raises InvalidValueError: When the given value is not bool
-        """
-
-        if isinstance(value, bool):
-            self._is_managed_by_nm = value
-        else:
-            raise InvalidValueError(value, bool)
-
-    @property
-    def has_ap_mode(self):
-        """
-        Return whether the interface supports AP mode
-
-        :param self: A NetworkAdapter object
-        :type self: NetworkAdapter
-        :return: True if interface supports AP mode and False otherwise
-        :rtype: bool
-        """
-
-        return self._has_ap_mode
-
-    @has_ap_mode.setter
-    def has_ap_mode(self, value):
-        """
-        Set whether the interface supports AP mode
-
-        :param self: A NetworkAdapter object
-        :param value: A value representing AP mode support
-        :type self: NetworkAdapter
-        :type value: bool
-        :return: None
-        :rtype: None
-        :raises InvalidValueError: When the given value is not bool
-        """
-
-        if isinstance(value, bool):
-            self._has_ap_mode = value
-        else:
-            raise InvalidValueError(value, bool)
-
-    @property
-    def has_monitor_mode(self):
-        """
-        Return whether the interface supports monitor mode
-
-        :param self: A NetworkAdapter object
-        :type self: NetworkAdapter
-        :return: True if interface supports monitor mode and False otherwise
-        :rtype: bool
-        """
-
-        return self._has_monitor_mode
-
-    @has_monitor_mode.setter
-    def has_monitor_mode(self, value):
-        """
-        Set whether the interface supports monitor mode
-
-        :param self: A NetworkAdapter object
-        :param value: A value representing monitor mode support
-        :type self: NetworkAdapter
-        :type value: bool
-        :return: None
-        :rtype: None
-        :raises InvalidValueError: When the given value is not bool
-        """
-
-        if isinstance(value, bool):
-            self._has_monitor_mode = value
-        else:
-            raise InvalidValueError(value, bool)
-
-    @property
-    def card(self):
-        """
-        Return the card object associated with the interface
-
-        :param self: A NetworkAdapter object
-        :type self: NetworkAdapter
-        :return: The card object
-        :rtype: pyric.pyw.Card
-        """
-
-        return self._card
-
-    @property
     def mac_address(self):
-        """
-        Return the current MAC address of the interface
-
-        :param self: A NetworkAdapter object
-        :type self: NetworkAdapter
-        :return: The MAC of the interface
-        :rtype: str
-        """
-
+        # type: () -> str
+        """Return the current MAC address of the interface."""
         return self._current_mac_address
 
     @mac_address.setter
     def mac_address(self, value):
-        """
-        Set the MAC address of the interface
-
-        :param self: A NetworkAdapter object
-        :param value: A value representing monitor mode support
-        :type self: NetworkAdapter
-        :type value: str
-        :return: None
-        :rtype: None
-        """
-
+        # type: (str) -> None
+        """Set the MAC address of the interface."""
         self._current_mac_address = value
-
-    @property
-    def original_mac_address(self):
-        """
-        Return the original MAC address of the interface
-
-        :param self: A NetworkAdapter object
-        :type self: NetworkAdapter
-        :return: The original MAC of the interface
-        :rtype: str
-        """
-
-        return self._original_mac_address
 
 
 class NetworkManager(object):
-    """
-    This class represents a network manager where it handles all the management
-    for the interfaces.
-    """
+    """Handles management of the interfaces."""
 
     def __init__(self):
         """
@@ -353,49 +186,13 @@ class NetworkManager(object):
         self._name_to_object = dict()
         self._active = set()
         self._exclude_shutdown = set()
-        self._internet_access_enable = False
+        self.internet_access_enable = False
         self._vifs_add = set()
 
-    @property
-    def internet_access_enable(self):
-        """
-        Return whether the -iI option is used
-
-        :param self: A NetworkManager object
-        :type self: NetworkManager
-        :return: None
-        :rtype: None
-        """
-        return self._internet_access_enable
-
-    @internet_access_enable.setter
-    def internet_access_enable(self, value):
-        """
-        Set the internet access
-
-        :param self: A NetworkManager object
-        :type self: NetworkManager
-        :return: None
-        :rtype: None
-        """
-
-        if isinstance(value, bool):
-            self._internet_access_enable = value
-        else:
-            raise InvalidValueError(value, bool)
-
     def is_interface_valid(self, interface_name, mode=None):
-        """
-        Check if interface is valid
+        # type: (str, str) -> bool
+        """Check if interface is valid.
 
-        :param self: A NetworkManager object
-        :param interface_name: Name of an interface
-        :param mode: The mode of the interface to be checked
-        :type self: NetworkManager
-        :type interface_name: str
-        :type mode: str
-        :return: True if interface is valid
-        :rtype: bool
         :raises InvalidInterfaceError: If the interface is invalid or the interface
         has been chosen in the set _active
         :raises InterfaceManagedByNetworkManagerError: If the card is managed and
@@ -404,7 +201,6 @@ class NetworkManager(object):
             The internet adapter should be put in the _exclude_shutdown set
             so that it will not be shutdown after the program exits.
         """
-
         try:
             interface_adapter = self._name_to_object[interface_name]
         except KeyError:
@@ -434,50 +230,26 @@ class NetworkManager(object):
         return True
 
     def up_interface(self, interface_name):
-        """
-        Equivalent to ifconfig interface_name up
+        # type: (str) -> None
+        """Equivalent to ifconfig interface_name up.
 
-        :param self: A NetworkManager object
-        :param interface_name: Name of an interface
-        :type self: NetworkManager
-        :type interface_name: str
-        :return: None
-        :rtype: None
         ..note: Let the pyrobophisher decide when to up the
         interface since some cards cannot up two virtual interface
         with managed mode in the same time.
         """
-
         card = self._name_to_object[interface_name].card
         pyw.up(card)
 
     def down_interface(self, interface_name):
-        """
-        Equivalent to ifconfig interface_name down
-
-        :param self: A NetworkManager object
-        :param interface_name: Name of an interface
-        :type self: NetworkManager
-        :type interface_name: str
-        :return: None
-        :rtype: None
-        """
-
+        # type: (str) -> None
+        """Equivalent to ifconfig interface_name down."""
         card = self._name_to_object[interface_name].card
         pyw.down(card)
 
     def set_interface_mac(self, interface_name, mac_address):
-        """
-        Set the specified MAC address for the interface
+        # type: (str, str) -> None
+        """Set the specified MAC address for the interface.
 
-        :param self: A NetworkManager object
-        :param interface_name: Name of an interface
-        :param mac_address: A MAC address
-        :type self: NetworkManager
-        :type interface_name: str
-        :type mac_address: str
-        :return: None
-        :rtype: None
         .. note: This method will set the interface to managed mode
         """
         card = self._name_to_object[interface_name].card
@@ -495,34 +267,18 @@ class NetworkManager(object):
                 raise
 
     def get_interface_mac(self, interface_name):
-        """
-        Return the MAC address of the interface
-
-        :param self: A NetworkManager object
-        :param interface_name: Name of an interface
-        :type self: NetworkManager
-        :type interface_name: str
-        :return: Interface MAC address
-        :rtype: str
-        """
-
+        # type: (str) -> str
+        """Return the MAC address of the interface."""
         return self._name_to_object[interface_name].mac_address
 
     def set_interface_mac_random(self, interface_name):
-        """
-        Set random MAC address for the interface
+        # type: (str) -> None
+        """Set random MAC address for the interface.
 
-        :param self: A NetworkManager object
-        :param interface_name: Name of an interface
-        :type self: NetworkManager
-        :type interface_name: str
-        :return: None
-        :rtype: None
         .. note: This method will set the interface to managed mode.
             Also the first 3 octets are always 00:00:00 by default
             Only set the mac address when card is in down state
         """
-
         # generate a new mac address and set it to adapter's new address
         new_mac_address = generate_random_address()
         self._name_to_object[interface_name].mac_address = new_mac_address
@@ -531,22 +287,13 @@ class NetworkManager(object):
         self.set_interface_mac(interface_name, new_mac_address)
 
     def set_interface_mode(self, interface_name, mode):
-        """
-        Set the specified mode for the interface
+        # type: (str, str) -> None
+        """Set the specified mode for the interface.
 
-        :param self: A NetworkManager object
-        :param interface_name: Name of an interface
-        :param mode: Mode of an interface
-        :type self: NetworkManager
-        :type interface_name: str
-        :type mode: str
-        :return: None
-        :rtype: None
         .. note: Available modes are unspecified, ibss, managed, AP
             AP VLAN, wds, monitor, mesh, p2p
             Only set the mode when card is in the down state
         """
-
         card = self._name_to_object[interface_name].card
         self.down_interface(interface_name)
         # set interface mode between brining it down and up
