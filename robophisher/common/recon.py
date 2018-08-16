@@ -1,40 +1,29 @@
-"""
-This module handles all the operations regarding locating all the
-available access points
-"""
+"""Handle locating all the available access points."""
 
 import collections
 import scapy.layers.dot11 as dot11
-import robophisher.common.constants as constants
+from robophisher.common.constants import ALL_2G_CHANNELS
 
 
 def is_packet_valid(packet):
-    """
-    Return whether the packet is valid using the following merits:
+    # type: (dot11.RadioTap) -> bool
+    """Return whether a packet is valid.
+
+    packet is valid if the following condtions are met:
         1. Is a Dot11Beacon frame
         2. Is not malformed
         3. The channel is in range of 1..13
-
-    :param packet: A scapy packet
-    :type packet: scapy.layers.RadioTap
-    :return: True if packet is valid and False otherwise
-    :rtype: bool
     """
     return (packet.haslayer(dot11.Dot11Beacon) and hasattr(packet.payload, "info") and packet.info
-            and not packet.info.startswith('\x00') and len(packet[dot11.Dot11Elt:3].info) == 1
-            and ord(packet[dot11.Dot11Elt:3].info) in constants.ALL_2G_CHANNELS)
+            and not packet.info.startswith(b"\x00") and len(packet[dot11.Dot11Elt:3].info) == 1
+            and ord(packet[dot11.Dot11Elt:3].info) in ALL_2G_CHANNELS)
 
 
 def get_new_ap(interface_name):
-    """
-    Return a tuple containing the information for an access point
+    # type: (str) -> Tuple[str, int, str, bool]
+    """Return a new access point.
 
-    :param interface_name: Name of an interface to sniff
-    :type interface_name: str
-    :return: AccessPoint tuple containing information
-    :rtype: AccessPoint(name, channel, mac_address, is_encrypted)
     :Example:
-
         >>> interface = "wlan0"
         >>> get_new_ap()
         AccessPoint("NEW AP", 2, 00:11:22:33:44:55, True)
