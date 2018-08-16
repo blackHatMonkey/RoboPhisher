@@ -64,3 +64,6 @@ wifiphisher/data/phishing-pages/plugin_update/static/update/*
 
 # vscode
 .vscode/
+
+# pytest
+.pytest_cache
