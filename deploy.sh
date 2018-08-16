@@ -7,7 +7,7 @@ set -o pipefail
 main(){
   git checkout --quiet master
   local current_version
-  current_version=$(grep -i "version =" setup.py |
+  current_version=$(grep -i "version=" setup.py |
     cut -d= -f2 | tr -d "\", ")
   echo -e "\\u25b7\\u25b7 Current Version = \\e[91m${current_version}\\e[39m"
 
@@ -15,12 +15,14 @@ main(){
   local major
   local minor
   local patch
+
   major=$(echo "${current_version}" |cut -d"." -f1)
   minor=$(echo "${current_version}" |cut -d"." -f2)
   patch=$(echo "${current_version}" |cut -d"." -f3)
 
   local logs
   logs="$(git log "$(git describe --tags --abbrev=0)"..HEAD)"
+
 
   if echo "${logs}" | grep -iq "breaking change";then
     echo -e "\\e[41mBreaking Change Detected!\\e[49m"
