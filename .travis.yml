@@ -7,7 +7,7 @@ install:
   - pip install tox twine
 
 script:
-  - tox -e ALL
+  - tox
 
 deploy:
   provider: script
