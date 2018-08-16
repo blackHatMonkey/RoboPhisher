@@ -7,10 +7,6 @@ from __future__ import print_function
 import re
 from setuptools import setup, find_packages
 
-with open('robophisher/__init__.py', 'r') as fd:
-    VERSION = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(),
-                        re.MULTILINE).group(1)
-
 
 def read_long_description():
     """
@@ -56,7 +52,7 @@ setup(
     keywords=KEYWORDS,
     packages=PACKAGES,
     include_package_data=INCLUDE_PACKAGE_DATA,
-    version=VERSION,
+    version="1.3.0",
     entry_points=ENTRY_POINTS,
     install_requires=INSTALL_REQUIRES,
     classifiers=CLASSIFIERS,

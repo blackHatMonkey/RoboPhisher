@@ -3,18 +3,15 @@ language: python
 python:
   - "2.7"
 
-addons:
-  apt_packages:
-    - pandoc
-
 install:
-  - pip install tox
+  - pip install tox twine
 
 script:
   - tox -e ALL
 
-after_success:
-  - git config --global user.name "semantic-release (via TravisCI)"
-  - git config --global user.email "semantic-release@travis"
-  - pip install python-semantic-release
-  - semantic-release publish
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: bash deploy.sh
+  on:
+    branch: master
